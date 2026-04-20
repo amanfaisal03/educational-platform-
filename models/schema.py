@@ -1,9 +1,11 @@
 from sqlalchemy import create_engine, ForeignKey, Column, Integer, String
 from sqlalchemy.orm import sessionmaker, declarative_base, relationship
+from sqlalchemy.orm import Session
+
 
 Base = declarative_base()
 engine = create_engine('postgresql://platform_user:platform_password@localhost:5433/platformdb')
-
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 class User(Base):
     __tablename__ = 'users'
@@ -59,7 +61,12 @@ class Material(Base):
 
     lesson = relationship("Lesson", back_populates="materials")
 
+    def create_material(self):
+        pass
 
 Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 session = Session()
+
+
+###delete this file ---- > just for study orm
