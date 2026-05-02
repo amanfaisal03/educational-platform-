@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Learning App</title>
+
+<style>
+.section { display: none; }
+.section.active { display: block; }
+</style>
+</head>
+
+<body>
+
+<!-- SIGNUP -->
+<div id="signupSection" class="section active">
+    <h2>Sign Up</h2>
+
+    <input type="text" id="signupName" placeholder="Name"><br>
+    <input type="email" id="signupEmail" placeholder="Email"><br>
+    <input type="password" id="signupPassword" placeholder="Password"><br>
+
+    <input type="radio" name="role" value="admin" id="admin">
+    <label for="admin">Admin</label>
+
+    <input type="radio" name="role" value="student" id="student" checked>
+    <label for="student">Student</label>
+
+    <button onclick="signup()">Sign Up</button>
+</div>
+
+<!-- ADMIN -->
+<div id="adminSection" class="section">
+    <h1>Admin Dashboard</h1>
+    <button onclick="logout()">Logout</button>
+
+    <h3>Students</h3>
+    <button onclick="adminGetStudents()">Get Students</button>
+    <div id="studentList"></div>
+</div>
+
+<!-- STUDENT -->
+<div id="studentSection" class="section">
+    <h1>Student Dashboard</h1>
+    <button onclick="logout()">Logout</button>
+
+    <h3>Courses</h3>
+    <button onclick="getCourses()">Get Courses</button>
+
+    <div id="output"></div>
+</div>
+
+<script>
+
+const BASE = "http://127.0.0.1:8000";
+
+/* =========================
+   AUTO LOGIN (IMPORTANT)
+========================= */
+window.onload = function () {
+    const role = localStorage.getItem("role");
+
+    if (role === "admin") {
+        showSection("adminSection");
+    }
+    else if (role === "student") {
+        showSection("studentSection");
+    }
+    else {
+        showSection("signupSection");
+    }
+};
+
+/* =========================
+   NAVIGATION
+========================= */
+function showSection(id) {
+    document.querySelectorAll('.section')
+        .forEach(s => s.classList.remove('active'));
+
+    document.getElementById(id).classList.add('active');
+}
+
+/* =========================
+   SIGNUP
+========================= */
+async function signup() {
+
+    const name = document.getElementById("signupName").value;
+    const email = document.getElementById("signupEmail").value;
+    const password = document.getElementById("signupPassword").value;
+    const role = document.querySelector('input[name="role"]:checked').value;
+
+    const res = await fetch(`${BASE}/sign_up`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password, role })
+    });
+
+    if (res.ok) {
+
+        // 🔥 IMPORTANT: save login state
+        localStorage.setItem("role", role);
+
+        if (role === "admin") {
+            showSection("adminSection");
+        } else {
+            showSection("studentSection");
+        }
+    }
+}
+
+/* =========================
+   LOGOUT
+========================= */
+function logout() {
+    localStorage.removeItem("role");
+    showSection("signupSection");
+}
+
+/* =========================
+   ADMIN API
+========================= */
+async function adminGetStudents() {
+    const res = await fetch(`${BASE}/admin/students`);
+    const data = await res.json();
+
+    document.getElementById("studentList").innerHTML =
+        data.map(s => `<p>${s.id} - ${s.name}</p>`).join("");
+}
+
+/* =========================
+   STUDENT API
+========================= */
+async function getCourses() {
+    const res = await fetch(`${BASE}/student/get_courses`);
+    const data = await res.json();
+
+    document.getElementById("output").innerHTML =
+        data.map(c => `<p>${c.id} - ${c.title}</p>`).join("");
+}
+
+</script>
+
+</body>
+</html>

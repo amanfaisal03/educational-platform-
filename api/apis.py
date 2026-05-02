@@ -9,25 +9,27 @@ from fastapi import FastAPI, UploadFile, File, Depends ,APIRouter
 from sqlalchemy.orm import Session
 from models.database import get_db_session
 from models.schema import Material
+# from config import Settings
 
-app= FastAPI()
-router = APIRouter()
-
-app.add_middleware(
-    CORSMiddleware,
+app = FastAPI()
+app.add_middleware(CORSMiddleware,
     allow_origins=["*"],
-    # allpw_origins=[settings.front_end_url],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-app.include_router(router)
+admin_router = APIRouter(prefix="/admin")
+student_router = APIRouter(prefix="/student")
+app.include_router(admin_router)
+app.include_router(student_router)
+
+
 @app.post("/sign_up")
 def sing_up_endpoint(user: UserCreate, db: Session = Depends(get_db_session)):
     return sign_up(db, user)
 
 
-@router.get("/Admin/students")
+@admin_router.get("/students")
 def get_students(db: Session = Depends(get_db_session)):
     students = get_student_names(db)
     result = []
@@ -40,7 +42,7 @@ def get_students(db: Session = Depends(get_db_session)):
     return result
 
 
-@router.post("/Admin/students/{student_name}")
+@admin_router.post("/students/{student_name}")
 def add_students_endpoint(student_name=str, db: Session = Depends(get_db_session)):
     add= add_students_to_dashboard(db, student_name)
     if add :
@@ -48,7 +50,7 @@ def add_students_endpoint(student_name=str, db: Session = Depends(get_db_session
     else:
         return {"message": "Student not found in the database"}
 
-@router.delete("/Admin/students/{student_id}")
+@admin_router.delete("/students/{student_id}")
 def delete_student_endpoint(student_id: int, db: Session = Depends(get_db_session)):
     success = delete_student(db, student_id)
     if success:
@@ -57,7 +59,7 @@ def delete_student_endpoint(student_id: int, db: Session = Depends(get_db_sessio
         return {"message": "Student not found"}
 
 
-@router.post("/Admin/add_course")
+@admin_router.post("/add_course")
 def add_course_endpoint(title:str, db: Session = Depends(get_db_session)):
     new_course = add_course_to_dashbord(title, db)
     if new_course:
@@ -66,7 +68,7 @@ def add_course_endpoint(title:str, db: Session = Depends(get_db_session)):
         return {"message": "Course already exists in the dashboard"}
 
 
-@router.get("/Student/get_courses")
+@student_router.get("/get_courses")
 def get_courses_endpoint(db: Session = Depends(get_db_session)):
     courses = get_courses_from_dashboard(db)
     result = []
@@ -77,8 +79,10 @@ def get_courses_endpoint(db: Session = Depends(get_db_session)):
         })
     return result
 
-@router.delete("/Admin/courses/{course_id}")
-def delete_course_endpoint(course_id: int, db: Session = Depends(get_db_session)):
+class Mohammad:
+    pass
+@admin_router.delete("/courses/{course_id}", response_model=Mohammad)
+def delete_course_endpoint(course_id: int, db: Session = Depends(get_db_session)) -> Mohammad:
     success = delete_course_from_dashboard(course_id, db)
     if success:
         return {"message": "Course deleted successfully"}
@@ -86,7 +90,7 @@ def delete_course_endpoint(course_id: int, db: Session = Depends(get_db_session)
         return {"message": "Course not found in the dashboard"}
 
 
-@router.post("/Admin/add_unit")
+@admin_router.post("/add_unit")
 def add_unit_to_course_endpoint(course_id: int, title: str, db: Session = Depends(get_db_session)):
     unit = add_unite_to_course(course_id, title, db)
     if unit:
@@ -94,7 +98,7 @@ def add_unit_to_course_endpoint(course_id: int, title: str, db: Session = Depend
     else:
         return {"message": "unit already exists in the dashboard"}
 
-@router.get("/Student/get_units")
+@student_router.get("/get_units")
 def get_unit_by_course_id_endpoint(course_id: int, db: Session = Depends(get_db_session)):
     units = get_unite_by_course_id(course_id, db)
     result = []
@@ -116,7 +120,7 @@ i cant delete unit directly because the unit is linked to the lessons
 """
 
 
-@router.post('/Admin/add_lesson')
+@admin_router.post('/add_lesson')
 def add_lesson_to_unit_endpoint( title :str , db:Session =Depends(get_db_session)):
     lesson =add_lesson_to_dashbord(title,db)
     if lesson:
@@ -125,7 +129,7 @@ def add_lesson_to_unit_endpoint( title :str , db:Session =Depends(get_db_session
         return {"message": "lesson already exists in the dashboard"}
 
 
-@router.get("/Student/get_lesson")
+@student_router.get("/get_lesson")
 def get_lesson_endpoint(unit_id:int,db:Session=Depends(get_db_session)):
     lessons=get_lesson_by_unit_id(unit_id,db)
     lessons_by_unit=[]
@@ -137,7 +141,7 @@ def get_lesson_endpoint(unit_id:int,db:Session=Depends(get_db_session)):
     return lessons_by_unit
 
 
-@router.post("/Admin/lessons/{lesson_id}/upload-video")
+@admin_router.post("/lessons/{lesson_id}/upload-video")
 def add_video_material_by_lesson_id(lesson_id: int,file: UploadFile = File(...),db: Session = Depends(get_db_session)):
     existing_video = db.query(Material).filter(Material.lesson_id == lesson_id,Material.type == "video").first()
     if existing_video:
@@ -157,7 +161,7 @@ def add_video_material_by_lesson_id(lesson_id: int,file: UploadFile = File(...),
         "material_id": new_material.id
     }
 
-@router.post("/Admin/lessons/{lesson_id}/upload-pdf")
+@admin_router.post("/lessons/{lesson_id}/upload-pdf")
 def add_pdf_material_by_lesson_id(lesson_id: int,file: UploadFile = File(...),db: Session = Depends(get_db_session)):
     existing_video = db.query(Material).filter(Material.lesson_id == lesson_id,Material.type == "pdf").first()
     if existing_video:
@@ -177,7 +181,7 @@ def add_pdf_material_by_lesson_id(lesson_id: int,file: UploadFile = File(...),db
         "material_id": new_material.id
     }
 
-@router.get("/Student/get_video")
+@student_router.get("/get_video")
 def get_video_by_lesson_id(lesson_id: int,db: Session = Depends(get_db_session)):
     video = db.query(Material).filter( Material.lesson_id == lesson_id,Material.type == "video").first()
     if not video:
@@ -187,7 +191,7 @@ def get_video_by_lesson_id(lesson_id: int,db: Session = Depends(get_db_session))
         content=video.file_data,
         media_type="video/mp4"
     )
-@router.get("/Student/pdf")
+@student_router.get("/pdf")
 def get_pdf_by_lesson_id(lesson_id: int,db: Session = Depends(get_db_session)):
     pdf = db.query(Material).filter(Material.lesson_id == lesson_id,Material.type == "pdf").first()
     if not pdf:

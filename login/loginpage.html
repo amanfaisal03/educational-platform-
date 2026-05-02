@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Learning App</title>
+    <style>
+
+        .section { display: none; }
+        .section.active { display: block; }
+
+    </style>
+</head>
+<body>
+
+<div id="signupSection" class="section active">
+    <div class="signup-box">
+        <h2>Sign Up</h2>
+
+        <label>Name</label>
+        <input type="text" id="signupName" placeholder="Your name">
+
+        <label>Email</label>
+        <input type="email" id="signupEmail" placeholder="Your email">
+
+        <label>Password</label>
+        <input type="password" id="signupPassword" placeholder="Password">
+
+        <p>Role:</p>
+        <input type="radio" name="role" value="admin" id="roleAdmin"> <label for="roleAdmin">Admin</label>
+        <input type="radio" name="role" value="student" id="roleStudent" checked> <label for="roleStudent">Student</label>
+
+        <button onclick="signup()">Sign Up</button>
+
+    </div>
+</div>
+
+<div id="adminSection" class="section">
+    <h1>Admin Dashboard</h1>
+
+    <div class="card">
+        <h3>Students</h3>
+        <div class="row">
+            <button onclick="adminGetStudents()">Get Students</button>
+        </div>
+        <div id="studentList"></div>
+
+        <div class="row">
+            <label>Name</label>
+            <input type="text" id="studentName" placeholder="Student name">
+            <button onclick="adminAddStudent()">Add Student</button>
+        </div>
+
+        <div class="row">
+            <label>Student ID</label>
+            <input type="text" id="studentId" placeholder="ID">
+            <button class="danger" onclick="adminDeleteStudent()">Delete Student</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>Courses</h3>
+        <div class="row">
+            <input type="text" id="courseTitle" placeholder="Course title">
+            <button onclick="addCourse()">Add Course</button>
+        </div>
+        <div class="row">
+            <input type="text" id="deleteCourseId" placeholder="Course ID">
+            <button class="danger" onclick="deleteCourse()">Delete Course</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>Units</h3>
+        <div class="row">
+            <input type="text" id="unitCourseId" placeholder="Course ID">
+            <input type="text" id="unitTitle" placeholder="Unit title">
+            <button onclick="addUnit()">Add Unit</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>Lessons</h3>
+        <div class="row">
+            <input type="text" id="lessonTitle" placeholder="Lesson title">
+            <button onclick="addLesson()">Add Lesson</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>Upload Video</h3>
+        <div class="row">
+            <input type="text" id="videoLessonId" placeholder="Lesson ID">
+            <input type="file" id="videoFile" accept="video/*">
+            <button onclick="uploadVideo()">Upload Video</button>
+        </div>
+
+        <h3>Upload PDF</h3>
+        <div class="row">
+            <input type="text" id="pdfLessonId" placeholder="Lesson ID">
+            <input type="file" id="pdfFile" accept=".pdf">
+            <button onclick="uploadPDF()">Upload PDF</button>
+        </div>
+    </div>
+
+    <div id="adminMsg"></div>
+</div>
+
+<div id="studentSection" class="section">
+
+    <h1>Student Dashboard</h1>
+
+    <div class="card">
+        <h3>Courses</h3>
+        <div class="row">
+            <button onclick="getCourses()">Get Courses</button>
+        </div>
+
+        <h3>Units</h3>
+        <div class="row">
+            <input type="text" id="unitCoaurseIdStudent" placeholder="Course ID">
+            <button onclick="getUnits()">Get Units</button>
+        </div>
+
+        <h3>Lessons</h3>
+        <div class="row">
+            <input type="text" id="lessonUnitIdStudent" placeholder="Unit ID">
+            <button onclick="getLessons()">Get Lessons</button>
+        </div>
+
+        <div id="output"></div>
+    </div>
+
+    <div class="card">
+        <h3>Video</h3>
+        <div class="row">
+            <input type="text" id="lessonVideoId" placeholder="Lesson ID">
+            <button onclick="loadVideo()">Load Video</button>
+        </div>
+        <video  controls style="display:none;"></video>
+
+        <h3>PDF</h3>
+        <div class="row">
+            <input type="text" id="lessonPdfId" placeholder="Lesson ID">
+            <button onclick="loadPDF()">Load PDF</button>
+        </div>
+        <iframe id="pdfViewer" width="100%" height="400" style="display:none;"></iframe>
+    </div>
+</div>
+
+<script>
+    const BASE_STUDENT = "http://127.0.0.1:8000/student";
+    const BASE_ADMIN   = "http://127.0.0.1:8000/admin";
+    const BASE         = "http://127.0.0.1:8000";
+
+ function showSection(id) {
+    document.querySelectorAll('.section')
+        .forEach(s => s.classList.remove('active'));
+
+    document.getElementById(id).classList.add('active');
+}
+
+
+    function showMsg(elId, text, type = 'success') {
+        const el = document.getElementById(elId);
+        el.innerHTML = `<div class="msg ${type}">${text}</div>`;
+        setTimeout(() => el.innerHTML = '', 3000);
+    }
+
+    async function signup() {
+        const name     = document.getElementById('signupName').value;
+        const email    = document.getElementById('signupEmail').value;
+        const password = document.getElementById('signupPassword').value;
+        const role     = document.querySelector('input[name="role"]:checked').value;
+
+    const res = await fetch(`${BASE}/sign_up`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password, role })
+    });
+
+    if (res.ok) {
+
+        localStorage.setItem("role", role);
+
+        if (role === "admin") {
+            showSection("adminSection");
+        } else {
+            showSection("studentSection");
+        }
+    }
+}
+
+
+
+    async function adminGetStudents() {
+        const res  = await fetch(`${BASE_ADMIN}/students`);
+        const data = await res.json();
+        const list = document.getElementById('studentList');
+        list.innerHTML = data.map(s =>
+            `<div class="student-item"><span>${s.id} - ${s.name}</span></div>`
+        ).join('') || '<p>No students found</p>';
+    }
+
+    async function adminAddStudent() {
+        const name = document.getElementById('studentName').value;
+        const res  = await fetch(`${BASE_ADMIN}/students/${name}`, { method: 'POST' });
+        const data = await res.json();
+        showMsg('adminMsg', data.message, res.ok ? 'success' : 'error');
+    }
+
+    async function adminDeleteStudent() {
+        const id  = document.getElementById('studentId').value;
+        const res = await fetch(`${BASE_ADMIN}/students/${id}`, { method: 'DELETE' });
+        const data = await res.json();
+        showMsg('adminMsg', data.message, res.ok ? 'success' : 'error');
+    }
+
+
+    async function addCourse() {
+        const title = document.getElementById('courseTitle').value;
+        const res   = await fetch(`${BASE_ADMIN}/add_course?title=${encodeURIComponent(title)}`, { method: 'POST' });
+        const data  = await res.json();
+        showMsg('adminMsg', data.message, res.ok ? 'success' : 'error');
+    }
+
+    async function deleteCourse() {
+        const id  = document.getElementById('deleteCourseId').value;
+        const res = await fetch(`${BASE_ADMIN}/courses/${id}`, { method: 'DELETE' });
+        const data = await res.json();
+        showMsg('adminMsg', data.message, res.ok ? 'success' : 'error');
+    }
+
+    async function addUnit() {
+        const courseId = document.getElementById('unitCourseId').value;
+        const title    = document.getElementById('unitTitle').value;
+        const res      = await fetch(`${BASE_ADMIN}/add_unit?course_id=${courseId}&title=${encodeURIComponent(title)}`, { method: 'POST' });
+        const data     = await res.json();
+        showMsg('adminMsg', data.message, res.ok ? 'success' : 'error');
+    }
+
+    async function addLesson() {
+        const title = document.getElementById('lessonTitle').value;
+        const res   = await fetch(`${BASE_ADMIN}/add_lesson?title=${encodeURIComponent(title)}`, { method: 'POST' });
+        const data  = await res.json();
+        showMsg('adminMsg', data.message, res.ok ? 'success' : 'error');
+    }
+
+    async function uploadVideo() {
+        const lessonId = document.getElementById('videoLessonId').value;
+        const file     = document.getElementById('videoFile').files[0];
+        if (!file) { alert('Please select a video file'); return; }
+
+        const form = new FormData();
+        form.append('file', file);
+
+        const res  = await fetch(`${BASE_ADMIN}/lessons/${lessonId}/upload-video`, { method: 'POST', body: form });
+        const data = await res.json();
+        showMsg('adminMsg', data.message, res.ok ? 'success' : 'error');
+    }
+
+    async function uploadPDF() {
+        const lessonId = document.getElementById('pdfLessonId').value;
+        const file     = document.getElementById('pdfFile').files[0];
+        if (!file) { alert('Please select a PDF file'); return; }
+
+        const form = new FormData();
+        form.append('file', file);
+
+        const res  = await fetch(`${BASE_ADMIN}/lessons/${lessonId}/upload-pdf`, { method: 'POST', body: form });
+        const data = await res.json();
+        showMsg('adminMsg', data.message, res.ok ? 'success' : 'error');
+    }
+
+    async function getCourses() {
+        const res  = await fetch(`${BASE_STUDENT}/get_courses`);
+        const data = await res.json();
+        document.getElementById('output').innerHTML =
+            '<h4>Courses</h4>' + data.map(c => `<p>${c.id} - ${c.title}</p>`).join('');
+    }
+
+    async function getUnits() {
+        const courseId = document.getElementById('unitCourseIdStudent').value;
+        const res      = await fetch(`${BASE_STUDENT}/get_units?course_id=${courseId}`);
+        const data     = await res.json();
+        document.getElementById('output').innerHTML =
+            '<h4>Units</h4>' + data.map(u => `<p>${u.id} - ${u.title}</p>`).join('');
+    }
+
+    async function getLessons() {
+        const unitId = document.getElementById('lessonUnitIdStudent').value;
+        const res    = await fetch(`${BASE_STUDENT}/get_lesson?unit_id=${unitId}`);
+        const data   = await res.json();
+        document.getElementById('output').innerHTML =
+            '<h4>Lessons</h4>' + data.map(l => `<p>${l.id} - ${l.title}</p>`).join('');
+    }
+
+    function loadVideo() {
+        const lessonId = document.getElementById('lessonVideoId').value;
+        const video    = document.getElementById('videoPlayer');
+        video.src      = `${BASE_STUDENT}/get_video?lesson_id=${lessonId}`;
+        video.style.display = 'block';
+        video.load();
+    }
+
+    function loadPDF() {
+        const lessonId  = document.getElementById('lessonPdfId').value;
+        const iframe    = document.getElementById('pdfViewer');
+        iframe.src      = `${BASE_STUDENT}/pdf?lesson_id=${lessonId}`;
+        iframe.style.display = 'block';
+    }
+</script>
+</body>
+</html>
