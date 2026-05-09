@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Sign Up</title>
+</head>
+<body>
+
+<form action="/sign_up" method="post">
+    <h2>Sign Up</h2>
+
+    <label>Name</label>
+    <input name="name" type="text" required>
+
+    <label>Email</label>
+    <input name="email" type="email" required>
+
+    <label>Password</label>
+    <input name="password" type="password" required>
+
+    <p>Role:</p>
+
+    <label>
+        <input type="radio" name="role" value="admin" required>
+        Admin
+    </label>                                                    
+
+    <label>
+        <input type="radio" name="role" value="student" checked>
+        Student
+    </label>
+
+    <button type="submit">Sign Up</button>
+
+    <p>
+        Already have an account?
+        <a href="/sign_in">Log In</a>
+    </p>
+</form>
+</body>
+</html>

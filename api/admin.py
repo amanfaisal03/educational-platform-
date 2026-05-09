@@ -1,58 +1,38 @@
-from fastapi import APIRouter
-from sqlalchemy.sql.functions import user
-
-from login.sign_up import get_student_names,delete_student , add_students_to_dashboard
-from login.admin import add_course_to_dashbord, delete_course_from_dashboard , add_unite_to_course , add_lesson_to_dashbord
-from fastapi import FastAPI, UploadFile, File, Depends ,APIRouter
+from fastapi import APIRouter, Depends, HTTPException, status, Form, UploadFile, File ,Request
 from sqlalchemy.orm import Session
+from fastapi.responses import HTMLResponse
 from models.database import get_db_session
 from models.schema import Material
-from fastapi import Depends, HTTPException, status
+from login.sign_up import get_student_names, delete_student, add_students_to_dashboard ,sign_up
+from login.admin import add_course_to_dashbord,delete_course_from_dashboard,add_unite_to_course,add_lesson_by_unite
+from fastapi.templating import Jinja2Templates
 
 admin_router = APIRouter(prefix="/admin")
+templates = Jinja2Templates(directory="templates")
 
-@admin_router.get("/students")
-def get_students(db: Session = Depends(get_db_session)):
+
+@admin_router.get("/", response_class=HTMLResponse)
+def admin_page(request: Request, db: Session = Depends(get_db_session)):
     students = get_student_names(db)
-    result = []
-    for student in students:
-        result.append({
-            "id": student.id,
-            "name": student.name
-        })
+    return templates.TemplateResponse(request, "admin.html", {"students": students})
 
-    return result
-
-
-@admin_router.get("/students")
-def get_students(db: Session = Depends(get_db_session)):
-    if user.role != "admin":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Not authorized"
-        )
-
+@admin_router.get("/students", response_class=HTMLResponse)
+def get_students(request: Request, db: Session = Depends(get_db_session)):
     students = get_student_names(db)
-
-    result = []
-    for student in students:
-        result.append({
-            "id": student.id,
-            "name": student.name
-        })
-
-    return result
+    return templates.TemplateResponse(request, "admin.html", {"students": students})
 
 
-@admin_router.post("/students/{student_name}")
-def add_students_endpoint(student_name=str, db: Session = Depends(get_db_session)):
-    add= add_students_to_dashboard(db, student_name)
-    if add :
-       return {"message": "Students added successfully"}
+
+@admin_router.post("/students")
+def add_students_endpoint(student_name: str = Form(...),db: Session = Depends(get_db_session)):
+    add = add_students_to_dashboard(db, student_name)
+    if add:
+        return {"message": "Student added successfully"}
     else:
-        return {"message": "Student not found in the database"}
+        return {"message": "Student not found in database"}
 
-@admin_router.delete("/students/{student_id}")
+
+@admin_router.post("/students/{student_id}")
 def delete_student_endpoint(student_id: int, db: Session = Depends(get_db_session)):
     success = delete_student(db, student_id)
     if success:
@@ -61,83 +41,98 @@ def delete_student_endpoint(student_id: int, db: Session = Depends(get_db_sessio
         return {"message": "Student not found"}
 
 
-@admin_router.post("/add_course")
-def add_course_endpoint(title:str, db: Session = Depends(get_db_session)):
+@admin_router.post("/add_courses")
+def add_course_endpoint(title: str = Form(...),db: Session = Depends(get_db_session)):
+
     new_course = add_course_to_dashbord(title, db)
     if new_course:
         return {"message": "Course added successfully"}
     else:
-        return {"message": "Course already exists in the dashboard"}
+        return {"message": "Course already exists"}
 
-@admin_router.delete("/courses/{course_id}")
+
+@admin_router.post("/courses/{course_id}")
 def delete_course_endpoint(course_id: int, db: Session = Depends(get_db_session)):
     success = delete_course_from_dashboard(course_id, db)
     if success:
         return {"message": "Course deleted successfully"}
     else:
-        return {"message": "Course not found in the dashboard"}
+        return {"message": "Course not found"}
 
 
-@admin_router.post("/add_unit")
-def add_unit_to_course_endpoint(course_id: int, title: str, db: Session = Depends(get_db_session)):
+
+@admin_router.post("/units")
+def add_unit_to_course_endpoint(course_id: int = Form(...),title: str = Form(...),db: Session = Depends(get_db_session)):
     unit = add_unite_to_course(course_id, title, db)
     if unit:
-        return {"message": "unit added successfully"}
+        return {"message": "Unit added successfully"}
     else:
-        return {"message": "unit already exists in the dashboard"}
-@admin_router.post('/add_lesson')
-def add_lesson_to_unit_endpoint( title :str , db:Session =Depends(get_db_session)):
-    lesson =add_lesson_to_dashbord(title,db)
-    if lesson:
-        return {"message": "lesson added successfully"}
-    else:
-        return {"message": "lesson already exists in the dashboard"}
-@admin_router.post("/lessons/{lesson_id}/upload-video")
-def add_video_material_by_lesson_id(lesson_id: int,file: UploadFile = File(...),db: Session = Depends(get_db_session)):
-    existing_video = db.query(Material).filter(Material.lesson_id == lesson_id,Material.type == "video").first()
-    if existing_video:
-        return {"message": "video already exists for this lesson"}
-    file_data = file.file.read()
+        return {"message": "Unit already exists"}
 
-    new_material = Material(
+
+@admin_router.post("/lessons")
+def add_lesson_to_unit_endpoint(unit_id: int = Form(...),title: str = Form(...),db: Session = Depends(get_db_session)):
+    lesson = add_lesson_by_unite(unit_id, title, db)
+    if lesson:
+        return {"message": "Lesson added successfully"}
+    else:
+        return {"message": "Lesson already exists"}
+
+
+@admin_router.post("/lessons/{lesson_id}/upload-video")
+def upload_video(lesson_id: int,file: UploadFile = File(...),db: Session = Depends(get_db_session)):
+    existing = db.query(Material).filter(Material.lesson_id == lesson_id,Material.type == "video").first()
+    if existing:
+        return {"message": "Video already exists for this lesson"}
+
+    file_data = file.file.read()
+    material = Material(
         lesson_id=lesson_id,
         type="video",
-        file_data=file_data,
+        file_data=file_data
     )
-    db.add(new_material)
+
+    db.add(material)
     db.commit()
-    db.refresh(new_material)
+    db.refresh(material)
+
     return {
-        "message": "video uploaded successfully",
-        "material_id": new_material.id
+        "message": "Video uploaded successfully",
+        "material_id": material.id
     }
+
 
 @admin_router.post("/lessons/{lesson_id}/upload-pdf")
-def add_pdf_material_by_lesson_id(lesson_id: int,file: UploadFile = File(...),db: Session = Depends(get_db_session)):
-    existing_video = db.query(Material).filter(Material.lesson_id == lesson_id,Material.type == "pdf").first()
-    if existing_video:
-        return {"message": "pdf already exists for this lesson"}
+def upload_pdf(lesson_id: int,file: UploadFile = File(...),db: Session = Depends(get_db_session)):
+    existing = db.query(Material).filter( Material.lesson_id == lesson_id,Material.type == "pdf").first()
+
+    if existing:
+        return {"message": "PDF already exists for this lesson"}
+
     file_data = file.file.read()
 
-    new_material = Material(
+    material = Material(
         lesson_id=lesson_id,
         type="pdf",
-        file_data=file_data,
+        file_data=file_data
     )
-    db.add(new_material)
+
+    db.add(material)
     db.commit()
-    db.refresh(new_material)
+    db.refresh(material)
+
     return {
-        "message": "pdf uploaded successfully",
-        "material_id": new_material.id
+        "message": "PDF uploaded successfully",
+        "material_id": material.id
     }
 
-# @app.delete("/unit/{unit_id}")
-# def delete_unit_from_course_endpoint(unit_id: int, db: Session = Depends(get_db_session)):
-#     result = delete_unit_from_course(unit_id, db)
-#     return {"message": "Unit deleted from the course successfully"}
-
-"""
-ask ahamd how can delete unit from course : 
-i cant delete unit directly because the unit is linked to the lessons 
-"""
+#
+# # @app.delete("/unit/{unit_id}")
+# # def delete_unit_from_course_endpoint(unit_id: int, db: Session = Depends(get_db_session)):
+# #     result = delete_unit_from_course(unit_id, db)
+# #     return {"message": "Unit deleted from the course successfully"}
+#
+# """
+# ask ahamd how can delete unit from course :
+# i cant delete unit directly because the unit is linked to the lessons
+# """

@@ -1,64 +1,78 @@
-from fastapi import APIRouter
-from starlette.responses import Response
-from login.student import get_courses_from_dashboard ,get_unite_by_course_id , get_lesson_by_unit_id
-
-from fastapi import FastAPI, UploadFile, File, Depends ,APIRouter
+from fastapi.templating import Jinja2Templates
+from fastapi import APIRouter, Depends, Request, HTTPException
+from fastapi.responses import Response, HTMLResponse
 from sqlalchemy.orm import Session
+from fastapi.templating import Jinja2Templates
+from login.student import get_courses_from_dashboard,get_unite_by_course_id,get_lesson_by_unit_id,get_courses_for_each_student
 from models.database import get_db_session
-from models.schema import Material
-# from config import Settings
+from models.schema import Material,User ,UserCourse
+from login.sign_up import get_current_user
+from fastapi.responses import RedirectResponse
+
+
+
 student_router = APIRouter(prefix="/student")
-@student_router.get("/get_courses")
-def get_courses_endpoint(db: Session = Depends(get_db_session)):
+templates = Jinja2Templates(directory="templates")
+
+
+@student_router.get("/allcourses", response_class=HTMLResponse)
+def get_courses_page(request: Request, db: Session = Depends(get_db_session)):
     courses = get_courses_from_dashboard(db)
-    result = []
-    for course in courses:
-        result.append({
-            "id": course.id,
-            "title": course.title
-        })
-    return result
+    return templates.TemplateResponse(request, "student/allcourses.html", {"courses": courses})
 
-@student_router.get("/get_units")
-def get_unit_by_course_id_endpoint(course_id: int, db: Session = Depends(get_db_session)):
+
+@student_router.get("/courses/{course_id}/units", response_class=HTMLResponse)
+def get_units_page(request: Request, course_id: int, db: Session = Depends(get_db_session)):
     units = get_unite_by_course_id(course_id, db)
-    result = []
-    for unit in units:
-        result.append({
-            "id": unit.id,
-            "title": unit.title,
-        })
-    return result
+    return templates.TemplateResponse(request, "student/units.html", {"units": units, "course_id": course_id})
 
 
-@student_router.get("/get_lesson")
-def get_lesson_endpoint(unit_id:int,db:Session=Depends(get_db_session)):
-    lessons=get_lesson_by_unit_id(unit_id,db)
-    lessons_by_unit=[]
-    for lesson in lessons:
-        lessons_by_unit.append({
-            "id": lesson.id,
-            "title": lesson.title,
-        })
-    return lessons_by_unit
+@student_router.get("/units/{unit_id}/lessons", response_class=HTMLResponse)
+def get_lessons_page(request: Request, unit_id: int, db: Session = Depends(get_db_session)):
+    lessons = get_lesson_by_unit_id(unit_id, db)
+    return templates.TemplateResponse(request, "student/lessons.html", {"lessons": lessons, "unit_id": unit_id})
 
-@student_router.get("/get_video")
-def get_video_by_lesson_id(lesson_id: int,db: Session = Depends(get_db_session)):
-    video = db.query(Material).filter( Material.lesson_id == lesson_id,Material.type == "video").first()
+
+@student_router.get("/lessons/{lesson_id}/video")
+def get_video(lesson_id: int, db: Session = Depends(get_db_session)):
+    video = db.query(Material).filter(Material.lesson_id == lesson_id, Material.type == "video").first()
     if not video:
-        return {"error": "Video not found"}
+        raise HTTPException(status_code=404, detail="Video not found")
+    return Response(content=video.file_data, media_type="video/mp4")
 
-    return Response(
-        content=video.file_data,
-        media_type="video/mp4"
-    )
-@student_router.get("/pdf")
-def get_pdf_by_lesson_id(lesson_id: int,db: Session = Depends(get_db_session)):
-    pdf = db.query(Material).filter(Material.lesson_id == lesson_id,Material.type == "pdf").first()
+
+@student_router.get("/lessons/{lesson_id}/pdf")
+def get_pdf(lesson_id: int, db: Session = Depends(get_db_session)):
+    pdf = db.query(Material).filter(Material.lesson_id == lesson_id, Material.type == "pdf").first()
     if not pdf:
-        return {"error": "PDF not found"}
+        raise HTTPException(status_code=404, detail="PDF not found")
+    return Response(content=pdf.file_data, media_type="application/pdf")
 
-    return Response(
-        content=pdf.file_data,
-        media_type="application/pdf"
+
+
+@student_router.get("/mycourses", response_class=HTMLResponse)
+def my_courses(request: Request,db: Session = Depends(get_db_session),user: User = Depends(get_current_user)):
+    courses = get_courses_for_each_student(user.id, db)
+    return templates.TemplateResponse(
+        request=request,
+        name="student/mycourses.html",
+        context={"courses": courses}
     )
+
+
+@student_router.post("/add-course/{course_id}")
+def add_course(course_id: int,db: Session = Depends(get_db_session),user: User = Depends(get_current_user)):
+
+    existing = db.query(UserCourse).filter(
+        UserCourse.user_id == user.id,
+        UserCourse.course_id == course_id
+    ).first()
+
+    if not existing:
+        db.add(UserCourse(
+            user_id=user.id,
+            course_id=course_id
+        ))
+        db.commit()
+
+    return RedirectResponse(url="/student/mycourses", status_code=303)

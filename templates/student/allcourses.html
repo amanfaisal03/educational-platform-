@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+
+    <style>
+        .start a{
+            color: black;
+            margin-right: 12px;
+        }
+        .courses{
+            display: flex;
+
+        }
+
+        .card{
+            background: white;
+            padding: 15px;
+            width: 240px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+        }
+
+
+
+
+
+    </style>
+
+</head>
+<body>
+
+    <div class="start">
+        <h2>Student Dashboard</h2>
+        <a href="/student/mycourses">my courses</a>
+        <a href="/signout">Sign Out</a>
+    </div>
+
+    <div>
+
+        <h1>Courses</h1>
+
+        <div class="courses">
+
+            {% for course in courses %}
+
+            <div class="card">
+
+                <h3>{{ course.name }}</h3>
+
+                <form action="/student/add-course/{{ course.id }}" method="post">
+                    <button type="submit">
+                        Add Course
+                    </button>
+                </form>
+
+                <a href="/student/courses/{{ course.id }}/units">
+                    View Course
+                </a>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</body>
+</html>

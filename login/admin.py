@@ -1,15 +1,18 @@
+from unicodedata import name
 from fastapi import FastAPI, File, UploadFile
 from sqlalchemy.orm import Session
 from fastapi import Depends
 from models.database import get_db_session
 from models.schema import Course, Unit, Lesson, Material
 
-def add_course_to_dashbord(title: str, db: Session = Depends(get_db_session)):
-    existing_course = db.query(Course).filter_by(title=title).first()
+
+
+def add_course_to_dashbord(name: str, db: Session = Depends(get_db_session)):
+    existing_course = db.query(Course).filter_by(name=name).first()
     if existing_course:
         return {"message": "Course already exists in the dashboard"}
 
-    new_course = Course(title=title)
+    new_course = Course(name=name)
     db.add(new_course)
     db.commit()
     db.refresh(new_course)
@@ -44,12 +47,12 @@ def add_unite_to_course(course_id: int, title: str, db: Session = Depends(get_db
 #         return {"message": "Unit deleted from the course successfully"}
 #     return {"message": "Unit not found in the course"}
 
-def add_lesson_to_dashbord(title:str, db: Session = Depends(get_db_session)):
+def add_lesson_by_unite(unite_id:int,title:str, db: Session = Depends(get_db_session)):
     existing_lesson =db.query(Lesson).filter_by(title=title).first()
     if existing_lesson:
         return {"message": "lesson already exists in the dashboard"}
 
-    new_lesson = Lesson(title=title)
+    new_lesson = Lesson(title=title,unite_id=unite_id)
     db.add(new_lesson)
     db.commit()
     db.refresh(new_lesson)

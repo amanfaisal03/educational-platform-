@@ -2,7 +2,7 @@ from fastapi import FastAPI, File, UploadFile
 from sqlalchemy.orm import Session
 from fastapi import Depends
 from models.database import get_db_session
-from models.schema import Course , Unit ,Lesson ,Material
+from models.schema import Course , Unit ,Lesson ,Material  ,UserCourse ,User
 from fastapi.responses import StreamingResponse
 import io
 
@@ -16,9 +16,10 @@ def get_unite_by_course_id(course_id: int, db: Session = Depends(get_db_session)
     return unite
 
 
-def get_lesson_by_unit_id(unit_id:int,db: Session = Depends(get_db_session)):
-    lesson=db.query(Lesson).filter_by(unit_id=unit_id).all()
+def get_lesson_by_unit_id(unite_id:int,db: Session = Depends(get_db_session)):
+    lesson=db.query(Lesson).filter_by(unite_id=unite_id).all()
     return lesson
 
-
-
+def get_courses_for_each_student(user_id, db: Session):
+    courses = db.query(Course).join(UserCourse, Course.id == UserCourse.course_id).filter(UserCourse.user_id == user_id).all()
+    return courses

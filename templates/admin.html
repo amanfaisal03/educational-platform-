@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+</head>
+<body>
+
+    <h1>Admin Dashboard</h1>
+
+    <hr>
+
+    <h2>Students</h2>
+
+    {% for student in students %}
+        <p>
+            {{ student.id }} - {{ student.name }}
+        </p>
+    {% endfor %}
+
+    <form action="/admin/students" method="post">
+
+        <input type="text" name="student_name" placeholder="Student name" required >
+
+        <button type="submit">
+            Add Student
+        </button>
+
+    </form>
+
+    <form action="/admin/delete-student" method="post">
+
+        <input type="number" name="student_id" placeholder="Student ID" required>
+        <button type="submit">
+            Delete Student
+        </button>
+
+    </form>
+
+    <hr>
+
+    <h2>Courses</h2>
+
+    <form action="/admin/add_courses" method="post">
+
+        <input type="text" name="title" placeholder="Course title" required>
+
+        <button type="submit">
+            Add Course
+        </button>
+
+    </form>
+
+    <form action="/admin/delete-course" method="post">
+
+        <input type="number" name="course_id" placeholder="Course ID" required>
+
+        <button type="submit">
+            Delete Course
+        </button>
+
+    </form>
+
+    <hr>
+
+    <h2>Units</h2>
+
+    <form action="/admin/units" method="post">
+
+        <input type="number" name="course_id" placeholder="Course ID" required>
+
+        <input type="text" name="title" placeholder="Unit title" required>
+
+        <button type="submit">
+            Add Unit
+        </button>
+
+    </form>
+
+    <hr>
+
+    <h2>Lessons</h2>
+
+    <form action="/admin/lessons" method="post">
+
+        <input type="number" name="unit_id" placeholder="Unit ID" required>
+
+        <input type="text" name="title" placeholder="Lesson title" required>
+
+        <button type="submit">
+            Add Lesson
+        </button>
+
+    </form>
+
+    <hr>
+
+    <h2>Upload Video</h2>
+
+    <form action="/admin/upload-video" method="post" enctype="multipart/form-data"
+    >
+
+        <input
+            type="number"
+            name="lesson_id"
+            placeholder="Lesson ID"
+            required
+        >
+
+        <input
+            type="file"
+            name="file"
+            accept="video/*"
+            required
+        >
+
+        <button type="submit">
+            Upload Video
+        </button>
+
+    </form>
+
+    <hr>
+
+    <h2>Upload PDF</h2>
+
+    <form
+        action="/admin/upload-pdf"
+        method="post"
+        enctype="multipart/form-data"
+    >
+
+        <input
+            type="number"
+            name="lesson_id"
+            placeholder="Lesson ID"
+            required
+        >
+
+        <input
+            type="file"
+            name="file"
+            accept=".pdf"
+            required
+        >
+
+        <button type="submit">
+            Upload PDF
+        </button>
+
+    </form>
+
+    <hr>
+
+    <a href="/signout">
+        Sign Out
+    </a>
+
+</body>
+</html>

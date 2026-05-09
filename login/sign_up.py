@@ -1,14 +1,19 @@
-from fastapi import FastAPI
+from fastapi import FastAPI ,Form
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from models.schema import User
 from typing import Literal
 # from models.database import SessionLocal
-from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi import Depends, FastAPI, HTTPException, status ,Response
 from pwdlib import PasswordHash
 from passlib.context import CryptContext
+from fastapi import Cookie
+from models.database import get_db_session
+
 
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
+SECRET_KEY = "supersecret"
+ALGORITHM = "HS256"
 
 class UserCreate(BaseModel):
     name: str
@@ -17,10 +22,19 @@ class UserCreate(BaseModel):
     role: Literal["student", "admin"]
 
 
-def sign_up(db: Session, user: UserCreate):
-    hashed_password = pwd_context.hash(user.password)
+class LoginRequest(BaseModel):
+    email: str
+    password: str
 
-    new_user = User(
+
+def sign_up(db: Session, user: UserCreate):
+    existing_user = db.query(User).filter(User.email == user.email).first()
+
+    if existing_user:
+        raise HTTPException(status_code=400, detail="User already exists")
+
+    hashed_password = pwd_context.hash(user.password)
+    new_user =User (
         name=user.name,
         email=user.email,
         password=hashed_password,
@@ -32,6 +46,15 @@ def sign_up(db: Session, user: UserCreate):
     db.refresh(new_user)
 
     return new_user
+
+
+def sign_in(db: Session, user: LoginRequest):
+    found_user = db.query(User).filter(User.email == user.email).first()
+
+    if not found_user or not pwd_context.verify(user.password, found_user.password):
+        raise HTTPException(status_code=400, detail="Invalid credentials")
+
+    return found_user
 
 def get_student_names(db: Session):
     students = db.query(User.id, User.name).filter(User.role == "student").all()
@@ -51,14 +74,15 @@ def delete_student(db: Session, student_id: int):
         return True
     return False
 
+ # cant delete student , i have course related with student so i need to delete corses for this student too.
 
-def authenticate_user(db: Session, username: str, password: str):
-    user = db.query(User).filter(User.email == username).first()
+
+def get_current_user(user_id: int = Cookie(None), db: Session = Depends(get_db_session)):
+    if not user_id:
+        raise HTTPException(status_code=401, detail="Not logged in , please login")
+
+    user = db.query(User).filter(User.id == int(user_id)).first()
     if not user:
-        return False
-    if not PasswordHash.verify(password, user.password):
-        return False
+        raise HTTPException(status_code=401, detail="User not found , please signup ")
+
     return user
-
-
-
