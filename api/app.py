@@ -6,7 +6,8 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy.orm import Session
 from models.database import get_db_session
 from fastapi.templating import Jinja2Templates
-
+from login.sign_up import get_current_user
+from models.schema import  User
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
@@ -51,9 +52,15 @@ def sign_in_endpoint(email: str = Form(...),password: str = Form(...),db: Sessio
         value=str(found_user.id),
         httponly=True
     )
+    response.set_cookie(
+        key="mahmoud",
+        value=str(43243243243),
+        httponly=True
+    )
 
     return response
 
 @app.get("/signout")
-def signout():
+def signout(user: User = Depends(get_current_user)):
     return RedirectResponse(url="/", status_code=302)
+    # who can delete cookie for this to all athentacation  ,

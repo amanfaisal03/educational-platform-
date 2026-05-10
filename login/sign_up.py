@@ -1,7 +1,7 @@
 from fastapi import FastAPI ,Form
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
-from models.schema import User
+from models.schema import User , UserCourse
 from typing import Literal
 # from models.database import SessionLocal
 from fastapi import Depends, FastAPI, HTTPException, status ,Response
@@ -9,6 +9,7 @@ from pwdlib import PasswordHash
 from passlib.context import CryptContext
 from fastapi import Cookie
 from models.database import get_db_session
+from login.student import get_courses_for_each_student
 
 
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
@@ -68,11 +69,17 @@ def add_students_to_dashboard(db: Session, student_name: str):
 
 def delete_student(db: Session, student_id: int):
     student = db.query(User).filter_by(id=student_id, role="student").first()
-    if student:
-        db.delete(student)
-        db.commit()
-        return True
-    return False
+    if not student:
+        return False
+
+    courses = get_courses_for_each_student(student_id, db)
+    if courses:
+        db.query(UserCourse).filter(UserCourse.user_id == student_id).delete()
+        db.flush()
+
+    db.delete(student)
+    db.commit()
+    return True
 
  # cant delete student , i have course related with student so i need to delete corses for this student too.
 

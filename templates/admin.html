@@ -6,155 +6,92 @@
 </head>
 <body>
 
-    <h1>Admin Dashboard</h1>
+<style>
+    form {
+        margin-bottom: 20px;
+    }
+    add-student-form {
+        margin-bottom: 40px;
+         padding-top: 50px;
+        padding-right: 30px;
+         padding-bottom: 50px;
+         padding-left: 80px;
+        
+    }
 
-    <hr>
+</style>
 
-    <h2>Students</h2>
+<h1>Admin Dashboard</h1>
 
-    {% for student in students %}
-        <p>
-            {{ student.id }} - {{ student.name }}
-        </p>
-    {% endfor %}
+<h2>Students</h2>
 
-    <form action="/admin/students" method="post">
+{% for student in students %}
+    <p>{{ student.id }} - {{ student.name }}</p>
+{% endfor %}
 
-        <input type="text" name="student_name" placeholder="Student name" required >
+<form action="/admin/students" method="post" class="add-student-form">
+    <input type="text" name="student_name" placeholder="Student name" required>
+    <button type="submit">Add Student</button>
+</form>
 
-        <button type="submit">
-            Add Student
-        </button>
+<form action="/admin/students/delete" method="post">
+    <input type="number" name="student_id" placeholder="Student ID" required>
+    <button type="submit">Delete Student</button>
+</form>
 
-    </form>
 
-    <form action="/admin/delete-student" method="post">
+<h2>Courses</h2>
 
-        <input type="number" name="student_id" placeholder="Student ID" required>
-        <button type="submit">
-            Delete Student
-        </button>
+<form action="/admin/add_courses" method="post">
+    <input type="text" name="title" placeholder="Course title" required>
+    <button type="submit">Add Course</button>
+</form>
 
-    </form>
 
-    <hr>
+<h2>Units</h2>
 
-    <h2>Courses</h2>
+<form action="/admin/units" method="post">
+    <input type="number" name="course_id" placeholder="Course ID" required>
+    <input type="text" name="title" placeholder="Unit title" required>
+    <button type="submit">Add Unit</button>
+</form>
 
-    <form action="/admin/add_courses" method="post">
 
-        <input type="text" name="title" placeholder="Course title" required>
+<h2>Lessons</h2>
 
-        <button type="submit">
-            Add Course
-        </button>
+<form action="/admin/lessons" method="post">
+    <input type="number" name="unit_id" placeholder="Unit ID" required>
+    <input type="text" name="title" placeholder="Lesson title" required>
+    <button type="submit">Add Lesson</button>
+</form>
 
-    </form>
 
-    <form action="/admin/delete-course" method="post">
 
-        <input type="number" name="course_id" placeholder="Course ID" required>
+<h2>Upload Video</h2>
 
-        <button type="submit">
-            Delete Course
-        </button>
+<form action="/admin/lessons/upload-video" method="post" enctype="multipart/form-data">
+    <input type="number" name="lesson_id" placeholder="Lesson ID" required>
+    <input type="file" name="file" accept="video/*" required>
+    <button type="submit">Upload Video</button>
+</form>
 
-    </form>
 
-    <hr>
 
-    <h2>Units</h2>
+<h2>Upload PDF</h2>
 
-    <form action="/admin/units" method="post">
+<form action="/admin/lessons/upload-pdf" method="post" enctype="multipart/form-data">
+    <input type="number" name="lesson_id" placeholder="Lesson ID" required>
+    <input type="file" name="file" accept=".pdf" required>
+    <button type="submit">Upload PDF</button>
+</form>
 
-        <input type="number" name="course_id" placeholder="Course ID" required>
+<div>
+<h2> Parent Website :) </h2>
+<iframe src = "https://www.joacademy.com/" ></iframe>
+</div> 
 
-        <input type="text" name="title" placeholder="Unit title" required>
+<a href="/signout">Sign Out</a>
 
-        <button type="submit">
-            Add Unit
-        </button>
-
-    </form>
-
-    <hr>
-
-    <h2>Lessons</h2>
-
-    <form action="/admin/lessons" method="post">
-
-        <input type="number" name="unit_id" placeholder="Unit ID" required>
-
-        <input type="text" name="title" placeholder="Lesson title" required>
-
-        <button type="submit">
-            Add Lesson
-        </button>
-
-    </form>
-
-    <hr>
-
-    <h2>Upload Video</h2>
-
-    <form action="/admin/upload-video" method="post" enctype="multipart/form-data"
-    >
-
-        <input
-            type="number"
-            name="lesson_id"
-            placeholder="Lesson ID"
-            required
-        >
-
-        <input
-            type="file"
-            name="file"
-            accept="video/*"
-            required
-        >
-
-        <button type="submit">
-            Upload Video
-        </button>
-
-    </form>
-
-    <hr>
-
-    <h2>Upload PDF</h2>
-
-    <form
-        action="/admin/upload-pdf"
-        method="post"
-        enctype="multipart/form-data"
-    >
-
-        <input
-            type="number"
-            name="lesson_id"
-            placeholder="Lesson ID"
-            required
-        >
-
-        <input
-            type="file"
-            name="file"
-            accept=".pdf"
-            required
-        >
-
-        <button type="submit">
-            Upload PDF
-        </button>
-
-    </form>
-
-    <hr>
-
-    <a href="/signout">
-        Sign Out
-    </a>
 
 </body>
 </html>

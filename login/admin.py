@@ -6,7 +6,6 @@ from models.database import get_db_session
 from models.schema import Course, Unit, Lesson, Material
 
 
-
 def add_course_to_dashbord(name: str, db: Session = Depends(get_db_session)):
     existing_course = db.query(Course).filter_by(name=name).first()
     if existing_course:
@@ -57,5 +56,3 @@ def add_lesson_by_unite(unite_id:int,title:str, db: Session = Depends(get_db_ses
     db.commit()
     db.refresh(new_lesson)
     return {"message": "lesson added to the dashboard successfully"}
-
-

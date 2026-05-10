@@ -32,8 +32,8 @@ def add_students_endpoint(student_name: str = Form(...),db: Session = Depends(ge
         return {"message": "Student not found in database"}
 
 
-@admin_router.post("/students/{student_id}")
-def delete_student_endpoint(student_id: int, db: Session = Depends(get_db_session)):
+@admin_router.post("/students/delete")
+def delete_student_endpoint(student_id: int = Form(...), db: Session = Depends(get_db_session)):
     success = delete_student(db, student_id)
     if success:
         return {"message": "Student deleted successfully"}
@@ -79,53 +79,33 @@ def add_lesson_to_unit_endpoint(unit_id: int = Form(...),title: str = Form(...),
         return {"message": "Lesson already exists"}
 
 
-@admin_router.post("/lessons/{lesson_id}/upload-video")
-def upload_video(lesson_id: int,file: UploadFile = File(...),db: Session = Depends(get_db_session)):
-    existing = db.query(Material).filter(Material.lesson_id == lesson_id,Material.type == "video").first()
+@admin_router.post("/lessons/upload-video")
+def upload_video(lesson_id: int = Form(...), file: UploadFile = File(...), db: Session = Depends(get_db_session)):
+    existing = db.query(Material).filter(Material.lesson_id == lesson_id, Material.type == "video").first()
     if existing:
         return {"message": "Video already exists for this lesson"}
 
     file_data = file.file.read()
-    material = Material(
-        lesson_id=lesson_id,
-        type="video",
-        file_data=file_data
-    )
-
+    material = Material(lesson_id=lesson_id, type="video", file_data=file_data)
     db.add(material)
     db.commit()
     db.refresh(material)
-
-    return {
-        "message": "Video uploaded successfully",
-        "material_id": material.id
-    }
+    return {"message": "Video uploaded successfully", "material_id": material.id}
 
 
-@admin_router.post("/lessons/{lesson_id}/upload-pdf")
-def upload_pdf(lesson_id: int,file: UploadFile = File(...),db: Session = Depends(get_db_session)):
-    existing = db.query(Material).filter( Material.lesson_id == lesson_id,Material.type == "pdf").first()
+@admin_router.post("/lessons/upload-pdf")
+def upload_pdf(lesson_id: int = Form(...), file: UploadFile = File(...), db: Session = Depends(get_db_session)):
+    existing = db.query(Material).filter(Material.lesson_id == lesson_id, Material.type == "pdf").first()
 
     if existing:
         return {"message": "PDF already exists for this lesson"}
 
     file_data = file.file.read()
-
-    material = Material(
-        lesson_id=lesson_id,
-        type="pdf",
-        file_data=file_data
-    )
-
+    material = Material(lesson_id=lesson_id, type="pdf", file_data=file_data)
     db.add(material)
     db.commit()
     db.refresh(material)
-
-    return {
-        "message": "PDF uploaded successfully",
-        "material_id": material.id
-    }
-
+    return {"message": "PDF uploaded successfully", "material_id": material.id}
 #
 # # @app.delete("/unit/{unit_id}")
 # # def delete_unit_from_course_endpoint(unit_id: int, db: Session = Depends(get_db_session)):
