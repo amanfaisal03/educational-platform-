@@ -3,10 +3,10 @@ from fastapi import APIRouter, Depends, Request, HTTPException
 from fastapi.responses import Response, HTMLResponse
 from sqlalchemy.orm import Session
 from fastapi.templating import Jinja2Templates
-from login.student import get_courses_from_dashboard,get_unite_by_course_id,get_lesson_by_unit_id,get_courses_for_each_student
+from backend.student import get_courses_from_dashboard,get_unite_by_course_id,get_lesson_by_unit_id,get_courses_for_each_student
 from models.database import get_db_session
 from models.schema import Material,User ,UserCourse
-from login.sign_up import get_current_user
+from backend.sign_up import get_current_user
 from fastapi.responses import RedirectResponse
 
 

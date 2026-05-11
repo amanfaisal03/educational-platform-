@@ -1,12 +1,12 @@
 from api.admin import admin_router
 from api.student import student_router
-from login.sign_up import sign_up, sign_in  ,UserCreate ,LoginRequest
+from backend.sign_up import sign_up, sign_in  ,UserCreate ,LoginRequest
 from fastapi import FastAPI, Depends, Request, Form
 from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy.orm import Session
 from models.database import get_db_session
 from fastapi.templating import Jinja2Templates
-from login.sign_up import get_current_user
+from backend.sign_up import get_current_user
 from models.schema import  User
 
 app = FastAPI()
@@ -52,11 +52,11 @@ def sign_in_endpoint(email: str = Form(...),password: str = Form(...),db: Sessio
         value=str(found_user.id),
         httponly=True
     )
-    response.set_cookie(
-        key="mahmoud",
-        value=str(43243243243),
-        httponly=True
-    )
+    # response.set_cookie(
+    #     key="mahmoud",
+    #     value=str(43243243243),
+    #     httponly=True
+    # )
 
     return response
 

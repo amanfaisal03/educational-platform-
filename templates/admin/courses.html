@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+</head>
+
+<style>
+        .card{
+            background: white;
+            padding: 15px;
+            width: 240px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+        }
+
+</style>
+<body>
+
+<h1>Courses dashboard</h1>
+
+<h3> hi teacher , you can add courses : </h3>
+<form action="/admin/add_courses" method="post" class ="card" >
+    <input type="text" name="title" placeholder="Course title" required>
+    <button type="submit">Add Course</button>
+</form>
+
+
+<h2>Existing courses</h2>
+
+{% for course in courses %}
+<div  class = "card">
+    <h3>{{ course.name }}</h3>
+    <a href="/admin/courses/{{ course.id }}/units">Unite for this course </a>
+</div>
+{% endfor %}
+<div class="card" >
+<a href="/admin">Back to Admin</a>
+  </div>
+    
+<div class="card">
+    <a href="/" > sign out </a>          SS
+</div>
+
+</body>
+</html>

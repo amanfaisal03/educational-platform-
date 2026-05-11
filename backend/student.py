@@ -10,7 +10,6 @@ def get_courses_from_dashboard(db: Session = Depends(get_db_session)):
     courses = db.query(Course).all()
     return courses
 
-
 def get_unite_by_course_id(course_id: int, db: Session = Depends(get_db_session)):
     unite = db.query(Unit).filter_by(course_id=course_id).all()
     return unite

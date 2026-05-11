@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Units</title>
+</head>
+<style>
+        .card{
+            background: white;
+            padding: 15px;
+            width: 240px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+        }
+</style>
+<body>
+
+<h1>Units for {{ course.name }}</h1>
+<h3> you can add unit for this course </h3>
+<form action="/admin/units" method="post" class="card">
+
+    <input type="hidden" name="course_id" value="{{ course.id }}">
+
+    <input type="text" name="title" placeholder="Unit title" required>
+    <button type="submit">Add Unit</button>
+</form>
+
+<h2>Existing Units</h2>
+
+{% for unit in course.units %}
+<div  class="card">
+    <h3>{{ unit.title }}</h3>
+
+    <a href="/admin/units/{{ unit.id }}/lessons">Lessons for this unit</a>
+</div>
+{% endfor %}
+
+<div class="card">
+ <a href="/admin/courses">BACK TO COURSE</a>
+</div>
+
+<div class="card">
+    <a href="/" > SIGN OUT</a>
+</div>
+
+</body>
+</html>

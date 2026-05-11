@@ -9,7 +9,7 @@ from pwdlib import PasswordHash
 from passlib.context import CryptContext
 from fastapi import Cookie
 from models.database import get_db_session
-from login.student import get_courses_for_each_student
+from backend.student import get_courses_for_each_student
 
 
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
@@ -86,7 +86,7 @@ def delete_student(db: Session, student_id: int):
 
 def get_current_user(user_id: int = Cookie(None), db: Session = Depends(get_db_session)):
     if not user_id:
-        raise HTTPException(status_code=401, detail="Not logged in , please login")
+        raise HTTPException(status_code=401, detail="Not logged in , please backend")
 
     user = db.query(User).filter(User.id == int(user_id)).first()
     if not user:
