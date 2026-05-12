@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from fastapi import Depends
 from models.database import get_db_session
 from models.schema import Course, Unit, Lesson, Material
-
+from fastapi.responses import HTMLResponse, RedirectResponse
 
 def add_course_to_dashbord(name: str, db: Session = Depends(get_db_session)):
     existing_course = db.query(Course).filter_by(name=name).first()
@@ -56,3 +56,30 @@ def add_lesson_by_unite(unite_id:int,title:str, db: Session = Depends(get_db_ses
     db.commit()
     db.refresh(new_lesson)
     return {"message": "lesson added to the dashboard successfully"}
+
+
+def upload_material(lesson_id: int, file: UploadFile, type_: str, db: Session):
+    existing = db.query(Material).filter(Material.lesson_id == lesson_id,Material.type == type_).first()
+
+    lesson = db.query(Lesson).filter(Lesson.id == lesson_id).first()
+    unit_id = lesson.unite_id
+
+    if existing:
+        return RedirectResponse(
+            url=f"/admin/units/{unit_id}/lessons",
+            status_code=303
+        )
+
+    material = Material(
+        lesson_id=lesson_id,
+        type=type_,
+        file_data=file.file.read()
+    )
+
+    db.add(material)
+    db.commit()
+
+    return RedirectResponse(
+        url=f"/admin/units/{unit_id}/lessons",
+        status_code=303
+    )

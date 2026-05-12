@@ -23,14 +23,14 @@ def get_courses_page(request: Request, db: Session = Depends(get_db_session), us
 
 @student_router.get("/courses/{course_id}/units", response_class=HTMLResponse)
 def get_units_page(request: Request, course_id: int, db: Session = Depends(get_db_session),user: User = Depends(get_current_user)):
-    units = get_unite_by_course_id(course_id, db)
-    return templates.TemplateResponse(request, "student/units.html", {"units": units, "course_id": course_id})
+    course= get_unite_by_course_id(course_id, db)
+    return templates.TemplateResponse(request, "student/units.html",  {"course": course})
 
 
 @student_router.get("/units/{unit_id}/lessons", response_class=HTMLResponse)
 def get_lessons_page(request: Request, unit_id: int, db: Session = Depends(get_db_session),user: User = Depends(get_current_user)):
-    lessons = get_lesson_by_unit_id(unit_id, db)
-    return templates.TemplateResponse(request, "student/lessons.html", {"lessons": lessons, "unit_id": unit_id})
+    unite = get_lesson_by_unit_id(unit_id, db)
+    return templates.TemplateResponse(request, "student/lessons.html", {"unite": unite})
 
 
 @student_router.get("/lessons/{lesson_id}/video")
@@ -53,11 +53,15 @@ def get_pdf(lesson_id: int, db: Session = Depends(get_db_session),user: User = D
 @student_router.get("/mycourses", response_class=HTMLResponse)
 def my_courses(request: Request,db: Session = Depends(get_db_session),user: User = Depends(get_current_user)):
     courses = get_courses_for_each_student(user.id, db)
+
     return templates.TemplateResponse(
         request=request,
         name="student/mycourses.html",
         context={"courses": courses}
     )
+
+
+
 
 
 @student_router.post("/add-course/{course_id}")

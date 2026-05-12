@@ -16,14 +16,14 @@
 <body>
 
 <h1>Units for {{ course.name }}</h1>
-<h3> you can add unit for this course </h3>
+<h3> you can add unit  </h3>
 <form action="/admin/units" method="post" class="card">
 
     <input type="hidden" name="course_id" value="{{ course.id }}">
-
     <input type="text" name="title" placeholder="Unit title" required>
     <button type="submit">Add Unit</button>
 </form>
+
 
 <h2>Existing Units</h2>
 

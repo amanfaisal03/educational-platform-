@@ -1,55 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
     <title>Admin Dashboard</title>
 </head>
 <body>
 
 <style>
-    form {
-        margin-bottom: 20px;
-    }
-    add-student-form {
-        margin-bottom: 40px;
-         padding-top: 50px;
-        padding-right: 30px;
-         padding-bottom: 50px;
-         padding-left: 80px;
-        
-    }
 
+ .card{
+            background: white;
+            padding: 15px;
+            width: 240px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+        }
 </style>
 
 <h1>Admin Dashboard</h1>
-
-<h2>Students</h2>
+<div  class="card">
+   <h2>Students in 10th grade </h2>
 
 {% for student in students %}
     <p>{{ student.id }} - {{ student.name }}</p>
 {% endfor %}
 
-<form action="/admin/students" method="post" class="add-student-form">
-    <input type="text" name="student_name" placeholder="Student name" required>
-    <button type="submit">Add Student</button>
-</form>
+</div>
 
-<form action="/admin/students/delete" method="post">
+<!--<form action="/admin/students" method="post" class ="card">-->
+<!--    <input type="text" name="student_name" placeholder="Student name" required>-->
+<!--    <button type="submit">Add Student</button>-->
+<!--</form>-->
+
+<form action="/admin/students/delete" method="post" class = "card">
     <input type="number" name="student_id" placeholder="Student ID" required>
     <button type="submit">Delete Student</button>
 </form>
 
-
 <h2>Courses</h2>
 
-<a href="/admin/courses">Manage Courses</a>
+<div  class="card">
+     <a href="/admin/courses">Courses</a>
+</div>
 
-<div>
-<h2> Parent Website :) </h2>
-<iframe src = "https://www.joacademy.com/" ></iframe>
-</div> 
+<div class = "card">
+ <a href="/signout">Sign Out</a>
+</div>
 
-<a href="/signout">Sign Out</a>
 
 
 </body>

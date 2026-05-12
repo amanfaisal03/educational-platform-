@@ -62,9 +62,16 @@ def get_student_names(db: Session):
     return students
 
 
-def add_students_to_dashboard(db: Session, student_name: str):
-    students = db.query(User).filter_by(name=student_name, role="student").all()
-    return students
+# def add_students_to_dashboard(db: Session, student_name: str):
+#     existing = db.query(User).filter_by(name=student_name, role="student").first()
+#     if existing:
+#         return None
+#
+#     new_student = User(name=student_name, role="student")
+#     db.add(new_student)
+#     db.commit()
+#     db.refresh(new_student)
+#     return new_student
 
 
 def delete_student(db: Session, student_id: int):

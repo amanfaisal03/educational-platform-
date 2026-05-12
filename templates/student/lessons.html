@@ -23,12 +23,10 @@
 
     </style>
 </head>
-
+      <h1> lessons by unite </h1>
 <body>
+{% for lesson in unite.lessons %}
 
-<h1>Lessons</h1>
-
-{% for lesson in lessons %}
     <div class="lesson">
 
         <h3>{{ lesson.title }}</h3>
@@ -44,6 +42,7 @@
         </div>
 
     </div>
+
 {% endfor %}
 
 </body>
