@@ -58,8 +58,9 @@ def add_lesson_by_unite(unite_id:int,title:str, db: Session = Depends(get_db_ses
     return {"message": "lesson added to the dashboard successfully"}
 
 
-def upload_material(lesson_id: int, file: UploadFile, type_: str, db: Session):
-    existing = db.query(Material).filter(Material.lesson_id == lesson_id,Material.type == type_).first()
+
+def upload_material(lesson_id: int, file: UploadFile, Mtype: str, db: Session):
+    existing = db.query(Material).filter(Material.lesson_id == lesson_id,Material.type == Mtype).first()
 
     lesson = db.query(Lesson).filter(Lesson.id == lesson_id).first()
     unit_id = lesson.unite_id
@@ -72,7 +73,7 @@ def upload_material(lesson_id: int, file: UploadFile, type_: str, db: Session):
 
     material = Material(
         lesson_id=lesson_id,
-        type=type_,
+        type=Mtype,
         file_data=file.file.read()
     )
 

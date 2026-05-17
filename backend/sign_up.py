@@ -2,7 +2,7 @@ from fastapi import FastAPI ,Form
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from models.schema import User , UserCourse
-from typing import Literal
+from typing import Literal, Optional
 # from models.database import SessionLocal
 from fastapi import Depends, FastAPI, HTTPException, status ,Response
 from pwdlib import PasswordHash
@@ -10,11 +10,10 @@ from passlib.context import CryptContext
 from fastapi import Cookie
 from models.database import get_db_session
 from backend.student import get_courses_for_each_student
+from backend.jwt import create_access_token, verify_token
 
 
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
-SECRET_KEY = "supersecret"
-ALGORITHM = "HS256"
 
 class UserCreate(BaseModel):
     name: str
@@ -91,12 +90,24 @@ def delete_student(db: Session, student_id: int):
  # cant delete student , i have course related with student so i need to delete corses for this student too.
 
 
-def get_current_user(user_id: int = Cookie(None), db: Session = Depends(get_db_session)):
-    if not user_id:
-        raise HTTPException(status_code=401, detail="Not logged in , please backend")
-
-    user = db.query(User).filter(User.id == int(user_id)).first()
-    if not user:
-        raise HTTPException(status_code=401, detail="User not found , please signup ")
-
-    return user
+def get_current_user(authorization: Optional[str] = Cookie(None), db: Session = Depends(get_db_session)):
+    if not authorization:
+        raise HTTPException(status_code=401, detail="Not logged in, please sign in")
+    
+    try:
+        if not authorization.startswith("Bearer "):
+            raise HTTPException(status_code=401, detail="Invalid token format")
+        
+        token = authorization.replace("Bearer ", "")
+        token_data = verify_token(token)
+        
+        user = db.query(User).filter(User.id == token_data.user_id).first()
+        if not user:
+            raise HTTPException(status_code=401, detail="User not found")
+        
+        return user
+    
+    except HTTPException:
+        raise
+    except Exception:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")

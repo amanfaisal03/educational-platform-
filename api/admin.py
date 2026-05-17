@@ -3,14 +3,14 @@ from sqlalchemy.orm import Session
 from fastapi.responses import HTMLResponse, RedirectResponse
 from models.database import get_db_session
 from models.schema import Material
-from backend.sign_up import get_student_names, delete_student
+from backend.sign_up import get_student_names, delete_student ,get_current_user
 from backend.admin import add_course_to_dashbord,delete_course_from_dashboard,add_unite_to_course,add_lesson_by_unite ,upload_material
 from fastapi.templating import Jinja2Templates
 from backend.student import get_courses_from_dashboard, get_unite_by_course_id, get_lesson_by_unit_id
-from models.schema import Course, Unit, Lesson
+from models.schema import Course, Unit, Lesson ,User
 
 
-admin_router = APIRouter(prefix="/admin")
+admin_router = APIRouter(prefix="/admin",dependencies=[Depends(get_current_user)])
 templates = Jinja2Templates(directory="templates")
 
 @admin_router.get("/", response_class=HTMLResponse)
