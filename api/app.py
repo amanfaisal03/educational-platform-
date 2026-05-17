@@ -70,8 +70,5 @@ def signout():
     response = RedirectResponse(url="/", status_code=302)
     response.delete_cookie(
         key="authorization",
-        httponly=True,
-        secure=False,
-        samesite="lax"
     )
     return response

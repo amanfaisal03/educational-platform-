@@ -28,11 +28,27 @@
 <h2>Existing courses</h2>
 
 {% for course in courses %}
-<div  class = "card">
+<div class="card">
+
     <h3>{{ course.name }}</h3>
-    <a href="/admin/courses/{{ course.id }}/units">Unite for this course </a>
+
+    <a href="/admin/courses/{{ course.id }}/units">
+        Unite for this course
+    </a>
+
+    <form action="/admin/courses/{{ course.id }}" method="post">
+        <button type="submit">Delete course</button>
+    </form>
+
 </div>
 {% endfor %}
+
+
+<div>
+
+</div>
+
+
 <div class="card" >
 <a href="/admin">Back to Admin</a>
   </div>
