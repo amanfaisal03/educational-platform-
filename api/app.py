@@ -9,6 +9,8 @@ from fastapi.templating import Jinja2Templates
 from backend.sign_up import get_current_user
 from backend.jwt import create_access_token
 from models.schema import User
+from sqlalchemy import text
+
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
@@ -72,3 +74,14 @@ def signout():
         key="authorization",
     )
     return response
+
+
+
+@app.get("/alluser")
+def count_user(db: Session = Depends(get_db_session)):
+    all_User=text('select count(*) from users')
+    result=db.execute(all_User)
+    # row = result.mappings().first()
+
+    count =result.scalar()
+    return {"count":count}
