@@ -4,10 +4,10 @@ from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
 from alembic import context
-from models.schema import Base
+from app.db.schema import Base
 
-from models.schema import Base
-from models.schema import  Course, Unit, Lesson, User
+from app.db.schema import Base
+from app.db.schema import  Course, Unit, Lesson, User
 
 
 
@@ -49,5 +49,4 @@ def run_migrations_online() -> None:
 
 
 run_migrations_online()
-
 
