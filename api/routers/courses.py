@@ -1,13 +1,13 @@
 from urllib.request import Request
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Form
 from sqlalchemy.orm import Session
-from starlette.responses import HTMLResponse, Response
+from starlette.responses import HTMLResponse, Response, RedirectResponse
 
 from api.routers.auth import get_current_user, templates
 from app.db.database import get_db_session
 from app.db.schema import Course, Unit, Material
-from services.admin_service import delete_course_from_dashboard
+from services.admin_service import delete_course_from_dashboard, add_course_to_dashbord
 from services.student_service import get_courses_from_dashboard, get_unite_by_course_id, get_lesson_by_unit_id
 
 courses_router = APIRouter(
@@ -62,6 +62,13 @@ def get_lessons_for_unit(request: Request,unit_id: int,db: Session = Depends(get
             "unit": unit,
         }
     )
+
+
+@courses_router.post("/add_courses")
+def add_course_endpoint(title: str = Form(...),db: Session = Depends(get_db_session)):
+    new_course = add_course_to_dashbord(title, db)
+    return RedirectResponse(url="/admin/courses", status_code=303)
+
 
 @courses_router.get("/units/{unit_id}/lessons", response_class=HTMLResponse)
 def get_lessons_page(request: Request, unit_id: int, db: Session = Depends(get_db_session)):

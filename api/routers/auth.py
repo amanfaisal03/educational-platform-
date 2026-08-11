@@ -13,12 +13,8 @@ from app.core.security import create_access_token, verify_token
 from app.db.schema import User
 from sqlalchemy import text
 
-app = FastAPI()
+
 templates = Jinja2Templates(directory="templates")
-
-app.include_router(admin_router)
-app.include_router(student_router)
-
 auth_router = APIRouter(prefix="/auth", tags=["Authentication"])
 @auth_router.get("/", response_class=HTMLResponse)
 def login_page(request: Request):
