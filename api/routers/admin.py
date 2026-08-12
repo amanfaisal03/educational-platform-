@@ -5,7 +5,7 @@ from app.db.database import get_db_session
 from services.auth_service import get_student_names, delete_student
 from services.admin_service import add_unite_to_course,add_lesson_by_unite ,upload_material
 from fastapi.templating import Jinja2Templates
-
+from api.dependencies.authorization import require_admin
 
 
 admin_router = APIRouter(

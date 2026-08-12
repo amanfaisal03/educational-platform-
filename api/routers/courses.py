@@ -4,9 +4,10 @@ from fastapi import APIRouter, Depends, HTTPException, Form
 from sqlalchemy.orm import Session
 from starlette.responses import HTMLResponse, Response, RedirectResponse
 
-from api.routers.auth import get_current_user, templates
+from api.dependencies.authentication import get_current_user
+from api.routers.admin import templates
 from app.db.database import get_db_session
-from app.db.schema import Course, Unit, Material
+from app.models.course import Course, Unit, Material
 from services.admin_service import delete_course_from_dashboard, add_course_to_dashbord
 from services.student_service import get_courses_from_dashboard, get_unite_by_course_id, get_lesson_by_unit_id
 

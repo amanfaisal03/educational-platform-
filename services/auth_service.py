@@ -1,44 +1,28 @@
-from fastapi import FastAPI ,Form
-from pydantic import BaseModel
+"""
+services/auth_service.py
+├── register_student
+└── authenticate_user
+
+"""
 from sqlalchemy.orm import Session
-from app.db.schema import User , UserCourse
-from typing import Literal, Optional
-# from app.db.database import SessionLocal
-from fastapi import Depends, FastAPI, HTTPException, status ,Response
-from pwdlib import PasswordHash
-from passlib.context import CryptContext
-from fastapi import Cookie
-from app.db.database import get_db_session
+from app.models.user import User
+from app.models.user_course import UserCourse
+from fastapi import  HTTPException
+from app.schemas.auth import LoginRequest,StudentRegistrationRequest
 from services.student_service import get_courses_for_each_student
-from app.core.security import create_access_token, verify_token
+from app.core.security import JWT_creation, JWT_verification, hash_password, verify_password
 
 
-pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
-
-class UserCreate(BaseModel):
-    name: str
-    email : str
-    password : str
-    role: Literal["student", "admin"]
-
-
-class LoginRequest(BaseModel):
-    email: str
-    password: str
-
-
-def sign_up(db: Session, user: UserCreate):
+def register_student(db: Session, user: StudentRegistrationRequest):
     existing_user = db.query(User).filter(User.email == user.email).first()
-
     if existing_user:
         raise HTTPException(status_code=400, detail="User already exists")
 
-    hashed_password = pwd_context.hash(user.password)
-    new_user =User (
+    new_user = User(
         name=user.name,
-        email=user.email,
-        password=hashed_password,
-        role=user.role
+        email=user.email.lower().strip(),
+        password=hash_password(user.password),
+        role="student",
     )
 
     db.add(new_user)
@@ -48,10 +32,10 @@ def sign_up(db: Session, user: UserCreate):
     return new_user
 
 
-def sign_in(db: Session, user: LoginRequest):
+def authenticate_user(db: Session, user: LoginRequest):
     found_user = db.query(User).filter(User.email == user.email).first()
 
-    if not found_user or not pwd_context.verify(user.password, found_user.password):
+    if not found_user or not verify_password(user.password, found_user.password):
         raise HTTPException(status_code=400, detail="Invalid credentials")
 
     return found_user
@@ -88,6 +72,5 @@ def delete_student(db: Session, student_id: int):
     return True
 
  # cant delete student , i have course related with student so i need to delete corses for this student too.
-
 
 
