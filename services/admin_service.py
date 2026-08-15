@@ -3,7 +3,7 @@ from fastapi import FastAPI, File, UploadFile
 from sqlalchemy.orm import Session
 from fastapi import Depends
 from app.db.database import get_db_session
-from app.db.schema import Course, Unit, Lesson, Material
+from app.models import Course, Unit, Lesson, Material
 from fastapi.responses import HTMLResponse, RedirectResponse
 
 def add_course_to_dashbord(name: str, db: Session = Depends(get_db_session)):

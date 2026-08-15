@@ -2,7 +2,7 @@ from fastapi import FastAPI, File, UploadFile
 from sqlalchemy.orm import Session
 from fastapi import Depends
 from app.db.database import get_db_session
-from app.db.schema import Course , Unit ,Lesson ,Material  ,UserCourse ,User
+from app.models import Course, Unit, Lesson, Material, UserCourse, User
 from fastapi.responses import StreamingResponse
 import io
 

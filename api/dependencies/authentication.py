@@ -5,7 +5,7 @@ from typing import Optional
 from fastapi import Cookie, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.db.database import get_db_session
-from app.db.schema import User
+from app.models import User
 from app.core.security import  JWT_verification
 
 

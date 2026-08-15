@@ -10,7 +10,6 @@ app/core/security.py
 import datetime
 from typing import Optional
 
-import expire
 from jose import JWTError, jwt
 from fastapi import HTTPException, status
 from pydantic import BaseModel
@@ -41,7 +40,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 
 def JWT_creation(user_id: int) -> str:
-    expire = datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=1)
+    expire = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=1)
     payload = {
         "sub": str(user_id),
         "exp": expire,
