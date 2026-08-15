@@ -7,7 +7,7 @@ from api.routers.materials import materials_router
 from api.routers.student_courses import student_courses_router
 
 
-app = APIRouter()
-app.include_router(admin_courses_router)
-app.include_router(student_courses_router)
-app.include_router(materials_router)
+courses_router= APIRouter()
+courses_router.include_router(admin_courses_router)
+courses_router.include_router(student_courses_router)
+courses_router.include_router(materials_router)

@@ -4,14 +4,20 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
 from api.dependencies.authorization import require_admin
+from api.dependencies.services import get_material_service
 from app.db.database import get_db_session
-from app.models import Course, Lesson, Unit
+from app.models import Course, Unit
 from services.admin_service import (
     add_course_to_dashbord,
     add_lesson_by_unite,
     add_unite_to_course,
     delete_course_from_dashboard,
-    upload_material,
+)
+from services.material_service import (
+    EmptyMaterialError,
+    InvalidMaterialTypeError,
+    LessonNotFoundError,
+    MaterialService,
 )
 from services.student_service import get_courses_from_dashboard
 
@@ -110,25 +116,33 @@ def create_unit_lesson(
     )
 
 
-def _upload(lesson_id: int, file: UploadFile, material_type: str, db: Session):
-    if db.query(Lesson).filter(Lesson.id == lesson_id).first() is None:
+async def _upload(
+    lesson_id: int,
+    file: UploadFile,
+    material_type: str,
+    service: MaterialService,
+):
+    file_data = await file.read()
+    try:
+        result = service.create_material(lesson_id, material_type, file_data)
+    except LessonNotFoundError:
         raise HTTPException(status_code=404, detail="Lesson not found")
-    return upload_material(lesson_id, file, material_type, db)
+    except InvalidMaterialTypeError:
+        raise HTTPException(status_code=400, detail="Invalid material type")
+    except EmptyMaterialError:
+        raise HTTPException(status_code=400, detail="Uploaded file is empty")
+
+    return RedirectResponse(
+        f"/admin/units/{result.unit_id}/lessons",
+        status_code=status.HTTP_303_SEE_OTHER,
+    )
 
 
 @admin_courses_router.post("/lessons/upload-video")
-def upload_video(
-    lesson_id: int = Form(...),
-    file: UploadFile = File(...),
-    db: Session = Depends(get_db_session),
-):
-    return _upload(lesson_id, file, "video", db)
+async def upload_video(lesson_id: int = Form(...),file: UploadFile = File(...),service: MaterialService = Depends(get_material_service),):
+    return await _upload(lesson_id, file, "video", service)
 
 
 @admin_courses_router.post("/lessons/upload-pdf")
-def upload_pdf(
-    lesson_id: int = Form(...),
-    file: UploadFile = File(...),
-    db: Session = Depends(get_db_session),
-):
-    return _upload(lesson_id, file, "pdf", db)
+async def upload_pdf(lesson_id: int = Form(...),file: UploadFile = File(...),service: MaterialService = Depends(get_material_service),):
+    return await _upload(lesson_id, file, "pdf", service)

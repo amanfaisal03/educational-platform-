@@ -11,11 +11,11 @@ from fastapi import  HTTPException
 from app.schemas.auth import LoginRequest,StudentRegistrationRequest
 from services.student_service import get_courses_for_each_student
 from app.core.security import JWT_creation, JWT_verification, hash_password, verify_password
+from repositories.auth_repository import AuthorRepository
 
 
 def register_student(db: Session, user: StudentRegistrationRequest):
-    existing_user = db.query(User).filter(User.email == user.email).first()
-    if existing_user:
+    if AuthorRepository.existing_user:
         raise HTTPException(status_code=400, detail="User already exists")
 
     new_user = User(
@@ -32,17 +32,14 @@ def register_student(db: Session, user: StudentRegistrationRequest):
     return new_user
 
 
-def authenticate_user(db: Session, user: LoginRequest):
-    found_user = db.query(User).filter(User.email == user.email).first()
-
-    if not found_user or not verify_password(user.password, found_user.password):
+def authenticate_user( user: LoginRequest):
+    if not AuthorRepository.existing_user or not verify_password(user.password, found_user.password):
         raise HTTPException(status_code=400, detail="Invalid credentials")
 
     return found_user
 
 def get_student_names(db: Session):
-    students = db.query(User.id, User.name).filter(User.role == "student").all()
-    return students
+    return AuthorRepository.get_student_names
 
 
 # def add_students_to_dashboard(db: Session, student_name: str):

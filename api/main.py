@@ -2,7 +2,7 @@ from fastapi import FastAPI
 
 from api.routers.admin import admin_router
 from api.routers.auth import auth_router
-from api.routers.main import courses_router
+from api.routers.courses import courses_router
 from api.routers.student import student_router
 
 
