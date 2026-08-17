@@ -2,7 +2,7 @@ from app.db.database import SessionLocal
 from sqlalchemy import select
 
 from app.core.Config import settings
-from app.core.security import hash_password
+from app.core.password_hasher import hash_password
 from app.models.user import User
 
 def create_admin()->None:

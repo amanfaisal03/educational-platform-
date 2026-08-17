@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, ForeignKey, Enum, LargeBinary
+from sqlalchemy import Column, Enum, ForeignKey, Integer, LargeBinary, String
 from sqlalchemy.orm import relationship
 
 from app.db.base import Base
@@ -10,18 +10,35 @@ class Course(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(255), nullable=False)
 
-    units = relationship("Unit", back_populates="course")
-    users = relationship("UserCourse", back_populates="course")
+    units = relationship(
+        "Unit",
+        back_populates="course",
+        cascade="all, delete-orphan",
+    )
+    users = relationship(
+        "UserCourse",
+        back_populates="course",
+        cascade="all, delete-orphan",
+    )
+
 
 class Unit(Base):
     __tablename__ = "units"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     title = Column(String(255), nullable=False)
-    course_id = Column(Integer, ForeignKey("courses.id"), nullable=False)
+    course_id = Column(
+        Integer,
+        ForeignKey("courses.id", ondelete="CASCADE"),
+        nullable=False,
+    )
 
     course = relationship("Course", back_populates="units")
-    lessons = relationship("Lesson", back_populates="unit")
+    lessons = relationship(
+        "Lesson",
+        back_populates="unit",
+        cascade="all, delete-orphan",
+    )
 
 
 class Lesson(Base):
@@ -29,10 +46,18 @@ class Lesson(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     title = Column(String(255), nullable=False)
-    unite_id = Column(Integer, ForeignKey("units.id"), nullable=False)
+    unite_id = Column(
+        Integer,
+        ForeignKey("units.id", ondelete="CASCADE"),
+        nullable=False,
+    )
 
     unit = relationship("Unit", back_populates="lessons")
-    materials = relationship("Material", back_populates="lesson")
+    materials = relationship(
+        "Material",
+        back_populates="lesson",
+        cascade="all, delete-orphan",
+    )
 
 
 class Material(Base):
@@ -40,10 +65,11 @@ class Material(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     type = Column(Enum("pdf", "video", name="material_type_enum"), nullable=False)
-
     file_data = Column(LargeBinary, nullable=True)
-    lesson_id = Column(Integer, ForeignKey("lessons.id"), nullable=False)
+    lesson_id = Column(
+        Integer,
+        ForeignKey("lessons.id", ondelete="CASCADE"),
+        nullable=False,
+    )
 
     lesson = relationship("Lesson", back_populates="materials")
-
-

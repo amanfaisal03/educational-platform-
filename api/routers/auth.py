@@ -1,13 +1,11 @@
-from fastapi import APIRouter, Depends, Form, Request, status
+from fastapi import APIRouter, Depends, Form, Request, status, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
-from sqlalchemy.orm import Session
-
-from app.core.security import JWT_creation
-from app.db.database import get_db_session
+from api.dependencies.services import get_auth_service, get_token_service
 from app.schemas.auth import LoginRequest, StudentRegistrationRequest
-from services.auth_service import authenticate_user, register_student
-
+from services.auth_service import AuthService
+from services.exceptions import UserAlreadyExistsError, InvalidCredentialsError
+from services.token_service import TokenService
 
 auth_router = APIRouter(tags=["Authentication"])
 templates = Jinja2Templates(directory="templates")
@@ -29,20 +27,46 @@ def register(
     name: str = Form(...),
     email: str = Form(...),
     password: str = Form(...),
-    db: Session = Depends(get_db_session),
+    service:AuthService = Depends(get_auth_service),
 ):
-    register_student(db, StudentRegistrationRequest(name=name, email=email, password=password))
-    return RedirectResponse("/sign_in", status_code=status.HTTP_303_SEE_OTHER)
+    request=StudentRegistrationRequest(
+        name=name,
+        email=email,
+        password=password,
+    )
+    try:
+        service.register_student(request)
+    except UserAlreadyExistsError:
+        raise HTTPException(
+            status_code=409,
+            detail="User already exists",
+        )
+
+    return RedirectResponse(
+        "/sign_in",
+        status_code=303,
+    )
 
 
 @auth_router.post("/sign_in")
 def login(
     email: str = Form(...),
     password: str = Form(...),
-    db: Session = Depends(get_db_session),
+    service:AuthService = Depends(get_auth_service),
+    token_service: TokenService = Depends(get_token_service),
 ):
-    user = authenticate_user(db, LoginRequest(email=email, password=password))
-    token = JWT_creation(user.id)
+    try :
+        user=service.authenticate(
+            LoginRequest(email=email,
+                         password=password)
+        )
+    except InvalidCredentialsError:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid credentials",
+        )
+
+    token = token_service.create_access_token(user.id)
     destination = "/admin" if user.role == "admin" else "/student/allcourses"
     response = RedirectResponse(destination, status_code=status.HTTP_303_SEE_OTHER)
     response.set_cookie(

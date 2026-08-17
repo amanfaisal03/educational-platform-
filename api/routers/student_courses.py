@@ -1,15 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from sqlalchemy.orm import Session
 
 from api.dependencies.authorization import require_student
-from app.db.database import get_db_session
-from services.student_service import (
-    get_courses_from_dashboard,
-    get_lesson_by_unit_id,
-    get_unite_by_course_id,
-)
+from api.dependencies.services import get_course_service
+from services.course_service import CourseService
+from services.exceptions import CourseNotFoundError, UnitNotFoundError
 
 
 student_courses_router = APIRouter(
@@ -21,11 +17,14 @@ templates = Jinja2Templates(directory="templates")
 
 
 @student_courses_router.get("/allcourses", response_class=HTMLResponse)
-def display_all_courses(request: Request, db: Session = Depends(get_db_session)):
+def display_all_courses(
+    request: Request,
+    service: CourseService = Depends(get_course_service),
+):
     return templates.TemplateResponse(
         request=request,
         name="student/allcourses.html",
-        context={"courses": get_courses_from_dashboard(db)},
+        context={"courses": service.list_courses()},
     )
 
 
@@ -33,10 +32,11 @@ def display_all_courses(request: Request, db: Session = Depends(get_db_session))
 def display_course_units(
     request: Request,
     course_id: int,
-    db: Session = Depends(get_db_session),
+    service: CourseService = Depends(get_course_service),
 ):
-    course = get_unite_by_course_id(course_id, db)
-    if course is None:
+    try:
+        course = service.get_course(course_id)
+    except CourseNotFoundError:
         raise HTTPException(status_code=404, detail="Course not found")
     return templates.TemplateResponse(
         request=request,
@@ -49,10 +49,11 @@ def display_course_units(
 def display_unit_lessons(
     request: Request,
     unit_id: int,
-    db: Session = Depends(get_db_session),
+    service: CourseService = Depends(get_course_service),
 ):
-    unit = get_lesson_by_unit_id(unit_id, db)
-    if unit is None:
+    try:
+        unit = service.get_unit(unit_id)
+    except UnitNotFoundError:
         raise HTTPException(status_code=404, detail="Unit not found")
     return templates.TemplateResponse(
         request=request,

@@ -9,6 +9,8 @@ class Settings(BaseSettings):
     database_url: str
     # front_end_url: str
     secret_key: str = "0c4bf72e725e337a63dc87f8efe350ff8b21c8e1b53cf2520533ef957fcd6acb"
+    jwt_algorithm: str = "HS256"
+    access_token_expire_minutes: int = 60
     admin_name: str
     admin_password: str
     admin_email: str

@@ -2,18 +2,11 @@ from dataclasses import dataclass
 
 from app.models import Material
 from repositories.material_repository import MaterialRepository
-
-
-class LessonNotFoundError(Exception):
-    """Raised when material is uploaded for a lesson that does not exist."""
-
-
-class InvalidMaterialTypeError(Exception):
-    """Raised when the material type is not supported."""
-
-
-class EmptyMaterialError(Exception):
-    """Raised when the uploaded file has no content."""
+from services.exceptions import (
+    EmptyMaterialError,
+    InvalidMaterialTypeError,
+    LessonNotFoundError,
+)
 
 
 @dataclass(frozen=True)
@@ -27,6 +20,18 @@ class MaterialService:
 
     def __init__(self, repository: MaterialRepository):
         self.repository = repository
+
+    def get_material(self, lesson_id: int, material_type: str) -> Material:
+        if material_type not in self.ALLOWED_TYPES:
+            raise InvalidMaterialTypeError(material_type)
+
+        material = self.repository.get_by_lesson_and_type(
+            lesson_id,
+            material_type,
+        )
+        if material is None or material.file_data is None:
+            raise LessonNotFoundError(lesson_id)
+        return material
 
     def create_material(
         self,
@@ -44,10 +49,11 @@ class MaterialService:
             raise LessonNotFoundError(lesson_id)
 
         material = self.repository.add(
-            Material(
-                lesson_id=lesson_id,
-                type=material_type,
-                file_data=file_data,
-            )
+            lesson_id=lesson_id,
+            material_type=material_type,
+            file_data=file_data,
         )
         return MaterialCreationResult(material=material, unit_id=lesson.unite_id)
+
+
+__all__ = ["MaterialCreationResult", "MaterialService"]

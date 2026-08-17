@@ -1,0 +1,60 @@
+from app.models import Course, Lesson, Unit
+from repositories.course_repository import CourseRepository
+from services.exceptions import (
+    CourseAlreadyExistsError,
+    CourseNotFoundError,
+    EmptyTitleError,
+    LessonAlreadyExistsError,
+    UnitNotFoundError,
+)
+
+
+class CourseService:
+    def __init__(self, courses: CourseRepository):
+        self.courses = courses
+
+    def list_courses(self) -> list[Course]:
+        return self.courses.list_courses()
+
+    def get_course(self, course_id: int) -> Course:
+        course = self.courses.get_course_by_id(course_id)
+        if course is None:
+            raise CourseNotFoundError(course_id)
+        return course
+
+    def create_course(self, name: str) -> Course:
+        normalized_name = name.strip()
+        if not normalized_name:
+            raise EmptyTitleError()
+        if self.courses.get_course_by_name(normalized_name) is not None:
+            raise CourseAlreadyExistsError(normalized_name)
+        return self.courses.add_course(normalized_name)
+
+    def delete_course(self, course_id: int) -> None:
+        course = self.get_course(course_id)
+        self.courses.delete_course(course)
+
+    def get_unit(self, unit_id: int) -> Unit:
+        unit = self.courses.get_unit_by_id(unit_id)
+        if unit is None:
+            raise UnitNotFoundError(unit_id)
+        return unit
+
+    def create_unit(self, course_id: int, title: str) -> Unit:
+        normalized_title = title.strip()
+        if not normalized_title:
+            raise EmptyTitleError()
+        self.get_course(course_id)
+        return self.courses.add_unit(course_id, normalized_title)
+
+    def create_lesson(self, unit_id: int, title: str) -> Lesson:
+        normalized_title = title.strip()
+        if not normalized_title:
+            raise EmptyTitleError()
+        self.get_unit(unit_id)
+        if self.courses.get_lesson_by_title(unit_id, normalized_title) is not None:
+            raise LessonAlreadyExistsError(normalized_title)
+        return self.courses.add_lesson(unit_id, normalized_title)
+
+
+__all__ = ["CourseService"]

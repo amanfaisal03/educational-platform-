@@ -1,25 +1,17 @@
-from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile, status
+from fastapi import APIRouter, Depends, Form, HTTPException, Request, status
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
-from sqlalchemy.orm import Session
 
 from api.dependencies.authorization import require_admin
-from api.dependencies.services import get_material_service
-from app.db.database import get_db_session
-from app.models import Course, Unit
-from services.admin_service import (
-    add_course_to_dashbord,
-    add_lesson_by_unite,
-    add_unite_to_course,
-    delete_course_from_dashboard,
+from api.dependencies.services import get_course_service
+from services.course_service import CourseService
+from services.exceptions import (
+    CourseAlreadyExistsError,
+    CourseNotFoundError,
+    EmptyTitleError,
+    LessonAlreadyExistsError,
+    UnitNotFoundError,
 )
-from services.material_service import (
-    EmptyMaterialError,
-    InvalidMaterialTypeError,
-    LessonNotFoundError,
-    MaterialService,
-)
-from services.student_service import get_courses_from_dashboard
 
 
 admin_courses_router = APIRouter(
@@ -31,26 +23,40 @@ templates = Jinja2Templates(directory="templates")
 
 
 @admin_courses_router.get("/courses", response_class=HTMLResponse)
-def display_courses(request: Request, db: Session = Depends(get_db_session)):
+def display_courses(
+    request: Request,
+    service: CourseService = Depends(get_course_service),
+):
     return templates.TemplateResponse(
         request=request,
         name="admin/courses.html",
-        context={"courses": get_courses_from_dashboard(db)},
+        context={"courses": service.list_courses()},
     )
 
 
 @admin_courses_router.post("/add_courses")
-def create_course(title: str = Form(...), db: Session = Depends(get_db_session)):
-    add_course_to_dashbord(title, db)
+def create_course(
+    title: str = Form(...),
+    service: CourseService = Depends(get_course_service),
+):
+    try:
+        service.create_course(title)
+    except EmptyTitleError:
+        raise HTTPException(status_code=400, detail="Course title is required")
+    except CourseAlreadyExistsError:
+        raise HTTPException(status_code=409, detail="Course already exists")
     return RedirectResponse("/admin/courses", status_code=status.HTTP_303_SEE_OTHER)
 
 
 @admin_courses_router.post("/courses/{course_id}")
-def delete_course(course_id: int, db: Session = Depends(get_db_session)):
-    course = db.query(Course).filter(Course.id == course_id).first()
-    if course is None:
+def delete_course(
+    course_id: int,
+    service: CourseService = Depends(get_course_service),
+):
+    try:
+        service.delete_course(course_id)
+    except CourseNotFoundError:
         raise HTTPException(status_code=404, detail="Course not found")
-    delete_course_from_dashboard(course_id, db)
     return RedirectResponse("/admin/courses", status_code=status.HTTP_303_SEE_OTHER)
 
 
@@ -58,10 +64,11 @@ def delete_course(course_id: int, db: Session = Depends(get_db_session)):
 def display_course_units(
     request: Request,
     course_id: int,
-    db: Session = Depends(get_db_session),
+    service: CourseService = Depends(get_course_service),
 ):
-    course = db.query(Course).filter(Course.id == course_id).first()
-    if course is None:
+    try:
+        course = service.get_course(course_id)
+    except CourseNotFoundError:
         raise HTTPException(status_code=404, detail="Course not found")
     return templates.TemplateResponse(
         request=request,
@@ -74,11 +81,14 @@ def display_course_units(
 def create_course_unit(
     course_id: int = Form(...),
     title: str = Form(...),
-    db: Session = Depends(get_db_session),
+    service: CourseService = Depends(get_course_service),
 ):
-    if db.query(Course).filter(Course.id == course_id).first() is None:
+    try:
+        service.create_unit(course_id, title)
+    except CourseNotFoundError:
         raise HTTPException(status_code=404, detail="Course not found")
-    add_unite_to_course(course_id, title, db)
+    except EmptyTitleError:
+        raise HTTPException(status_code=400, detail="Unit title is required")
     return RedirectResponse(
         f"/admin/courses/{course_id}/units",
         status_code=status.HTTP_303_SEE_OTHER,
@@ -89,10 +99,11 @@ def create_course_unit(
 def display_unit_lessons(
     request: Request,
     unit_id: int,
-    db: Session = Depends(get_db_session),
+    service: CourseService = Depends(get_course_service),
 ):
-    unit = db.query(Unit).filter(Unit.id == unit_id).first()
-    if unit is None:
+    try:
+        unit = service.get_unit(unit_id)
+    except UnitNotFoundError:
         raise HTTPException(status_code=404, detail="Unit not found")
     return templates.TemplateResponse(
         request=request,
@@ -105,44 +116,17 @@ def display_unit_lessons(
 def create_unit_lesson(
     unit_id: int = Form(...),
     title: str = Form(...),
-    db: Session = Depends(get_db_session),
+    service: CourseService = Depends(get_course_service),
 ):
-    if db.query(Unit).filter(Unit.id == unit_id).first() is None:
+    try:
+        service.create_lesson(unit_id, title)
+    except UnitNotFoundError:
         raise HTTPException(status_code=404, detail="Unit not found")
-    add_lesson_by_unite(unit_id, title, db)
+    except LessonAlreadyExistsError:
+        raise HTTPException(status_code=409, detail="Lesson already exists")
+    except EmptyTitleError:
+        raise HTTPException(status_code=400, detail="Lesson title is required")
     return RedirectResponse(
         f"/admin/units/{unit_id}/lessons",
         status_code=status.HTTP_303_SEE_OTHER,
     )
-
-
-async def _upload(
-    lesson_id: int,
-    file: UploadFile,
-    material_type: str,
-    service: MaterialService,
-):
-    file_data = await file.read()
-    try:
-        result = service.create_material(lesson_id, material_type, file_data)
-    except LessonNotFoundError:
-        raise HTTPException(status_code=404, detail="Lesson not found")
-    except InvalidMaterialTypeError:
-        raise HTTPException(status_code=400, detail="Invalid material type")
-    except EmptyMaterialError:
-        raise HTTPException(status_code=400, detail="Uploaded file is empty")
-
-    return RedirectResponse(
-        f"/admin/units/{result.unit_id}/lessons",
-        status_code=status.HTTP_303_SEE_OTHER,
-    )
-
-
-@admin_courses_router.post("/lessons/upload-video")
-async def upload_video(lesson_id: int = Form(...),file: UploadFile = File(...),service: MaterialService = Depends(get_material_service),):
-    return await _upload(lesson_id, file, "video", service)
-
-
-@admin_courses_router.post("/lessons/upload-pdf")
-async def upload_pdf(lesson_id: int = Form(...),file: UploadFile = File(...),service: MaterialService = Depends(get_material_service),):
-    return await _upload(lesson_id, file, "pdf", service)
