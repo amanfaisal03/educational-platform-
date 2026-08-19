@@ -14,9 +14,9 @@ from services.exceptions import (
 )
 
 
-admin_courses_router = APIRouter(
-    prefix="/admin",
-    tags=["Admin courses"],
+admin_courses_router= APIRouter(
+    prefix="/api/v1/admin",
+    tags=["API v1 - AdminCourses"],
     dependencies=[Depends(require_admin)],
 )
 templates = Jinja2Templates(directory="templates")

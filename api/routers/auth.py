@@ -7,7 +7,9 @@ from services.auth_service import AuthService
 from services.exceptions import UserAlreadyExistsError, InvalidCredentialsError
 from services.token_service import TokenService
 
-auth_router = APIRouter(tags=["Authentication"])
+auth_router = APIRouter(
+    prefix="/api/v1/auth",
+    tags=["API V1 - Authentication"])
 templates = Jinja2Templates(directory="templates")
 
 

@@ -9,8 +9,8 @@ from services.exceptions import CourseNotFoundError, UnitNotFoundError
 
 
 student_courses_router = APIRouter(
-    prefix="/student",
-    tags=["Student courses"],
+    prefix="/api/V1/student",
+    tags=["APi V1 - Student courses"],
     dependencies=[Depends(require_student)],
 )
 templates = Jinja2Templates(directory="templates")

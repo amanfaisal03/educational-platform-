@@ -8,8 +8,8 @@ from services.material_service import MaterialService
 
 
 materials_router = APIRouter(
-    prefix="/student/lessons",
-    tags=["Materials"],
+    prefix="/api/v1/student/lessons",
+    tags=["API V1 - Materials"],
     dependencies=[Depends(require_student)],
 )
 

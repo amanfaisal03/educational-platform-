@@ -6,7 +6,7 @@ from api.dependencies.services import get_student_admin_service
 from services.exceptions import StudentNotFoundError
 from services.student_admin_services import StudentAdminService
 
-admin_router = APIRouter(prefix="/admin",tags=["Admin"],dependencies=[Depends(require_admin)],)
+admin_router = APIRouter(prefix="/api/v1/admin",tags=["API v1 - Admin"],dependencies=[Depends(require_admin)],)
 templates = Jinja2Templates(directory="templates")
 
 

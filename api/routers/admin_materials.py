@@ -12,8 +12,8 @@ from services.material_service import MaterialService
 
 
 admin_materials_router = APIRouter(
-    prefix="/admin/lessons",
-    tags=["Admin materials"],
+    prefix="/api/v1/admin/lessons",
+    tags=["API V1 - Admin materials"],
     dependencies=[Depends(require_admin)],
 )
 
