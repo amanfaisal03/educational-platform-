@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends, Form, HTTPException, Request, status
+from fastapi import APIRouter, Depends, Form, HTTPException, Request, status, responses
+from fastapi.openapi.models import Response
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from api.dependencies.authorization import require_admin
@@ -21,19 +22,13 @@ def admin_page(request: Request, service:StudentAdminService = Depends(get_stude
         context={"students": students},
     )
 
-@admin_router.post("/students/delete")
+@admin_router.post("/students/delete/{student_id}")
 def delete_student(
-    student_id: int = Form(...),
-    service: StudentAdminService = Depends(get_student_admin_service)):
+    student_id:int,
+    service: StudentAdminService = Depends(get_student_admin_service))-> Response:
     try:
         service.delete_student(student_id)
     except StudentNotFoundError:
-        raise HTTPException(
-            status_code=404,
-            detail="Student not found",
-        )
+        raise HTTPException(status_code=404, detail="Student not found")
 
-    return RedirectResponse(
-        "/admin",
-        status_code=303,
-    )
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

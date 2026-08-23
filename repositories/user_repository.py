@@ -19,12 +19,14 @@ class UserRepository:
             .filter(
                 User.id == student_id,
                 User.role == "student",
+                User.is_deleted.is_(False),
             )
             .first()
         )
 
     def list_students(self) -> list[User]:
-        return self.db.query(User).filter(User.role == "student").all()
+        return (self.db.query(User).filter(User.role == "student"
+                                           ,User.is_deleted.is_(False)).all())
 
     def add(
         self,
@@ -46,6 +48,11 @@ class UserRepository:
 
     def delete(self, user: User) -> None:
         self.db.delete(user)
+
+    def soft_delete (self, user:User) -> None:
+        user.is_deleted = True
+
+
 
 
 __all__ = ["UserRepository"]

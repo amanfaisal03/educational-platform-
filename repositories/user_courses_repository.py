@@ -4,7 +4,6 @@ from app.models import Course, UserCourse
 
 
 class UserCourseRepository:
-    """Persistence operations for student-course enrollment records."""
 
     def __init__(self, db: Session):
         self.db = db
@@ -37,13 +36,5 @@ class UserCourseRepository:
             .filter(UserCourse.user_id == user_id)
             .all()
         )
-
-    def delete_for_student(self, student_id: int) -> None:
-        (
-            self.db.query(UserCourse)
-            .filter(UserCourse.user_id == student_id)
-            .delete(synchronize_session=False)
-        )
-
 
 __all__ = ["UserCourseRepository"]

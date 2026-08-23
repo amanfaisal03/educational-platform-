@@ -19,12 +19,14 @@ class StudentAdminService:
     def get_student(self, student_id: int) -> User | None:
         return self.users.get_student_by_id(student_id)
 
-    def delete_student(self, student_id: int) -> None:
+
+    def delete_student(self ,student_id: int) -> None:
         student = self.users.get_student_by_id(student_id)
         if student is None:
             raise StudentNotFoundError()
-        self.enrollments.delete_for_student(student_id)
-        self.users.delete(student)
+        self.users.soft_delete(student)
+
+
 
 
 __all__ = ["StudentAdminService"]

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Enum, ForeignKey, Integer, LargeBinary, String
+from sqlalchemy import Column, Enum, ForeignKey, Integer, LargeBinary, String, Boolean
 from sqlalchemy.orm import relationship
 
 from app.db.base import Base
@@ -9,6 +9,7 @@ class Course(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(255), nullable=False)
+    is_active = Column(Boolean, default=True,nullable=False)
 
     units = relationship(
         "Unit",
@@ -21,7 +22,6 @@ class Course(Base):
         cascade="all, delete-orphan",
     )
 
-
 class Unit(Base):
     __tablename__ = "units"
 
@@ -32,6 +32,7 @@ class Unit(Base):
         ForeignKey("courses.id", ondelete="CASCADE"),
         nullable=False,
     )
+    is_active = Column(Boolean, default=True,nullable=False)
 
     course = relationship("Course", back_populates="units")
     lessons = relationship(
@@ -51,6 +52,8 @@ class Lesson(Base):
         ForeignKey("units.id", ondelete="CASCADE"),
         nullable=False,
     )
+    is_active = Column(Boolean, default=True,nullable=False)
+
 
     unit = relationship("Unit", back_populates="lessons")
     materials = relationship(
@@ -71,5 +74,5 @@ class Material(Base):
         ForeignKey("lessons.id", ondelete="CASCADE"),
         nullable=False,
     )
-
+    is_active = Column(Boolean, default=True,nullable=False)
     lesson = relationship("Lesson", back_populates="materials")
