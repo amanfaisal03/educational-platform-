@@ -30,9 +30,9 @@ class CourseService:
             raise CourseAlreadyExistsError(normalized_name)
         return self.courses.add_course(normalized_name)
 
-    def delete_course(self, course_id: int) -> None:
+    def deactivate_course(self, course_id: int) -> None:
         course = self.get_course(course_id)
-        self.courses.delete_course(course)
+        self.courses.deactivate_course(course)
 
     def get_unit(self, unit_id: int) -> Unit:
         unit = self.courses.get_unit_by_id(unit_id)

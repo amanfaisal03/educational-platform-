@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 
-from app.models import Course, UserCourse
+from app.models.course import Course
+from app.models.user_course import UserCourse
 
 
 class UserCourseRepository:
@@ -36,5 +37,14 @@ class UserCourseRepository:
             .filter(UserCourse.user_id == user_id)
             .all()
         )
+
+    def delete_for_student(self, student_id: int) -> None:
+        (
+            self.db.query(UserCourse)
+            .filter(UserCourse.user_id == student_id)
+            .delete(synchronize_session=False)
+        )
+
+
 
 __all__ = ["UserCourseRepository"]

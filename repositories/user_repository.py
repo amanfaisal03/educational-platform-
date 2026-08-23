@@ -11,7 +11,7 @@ class UserRepository:
         return self.db.query(User).filter(User.id == user_id).first()
 
     def get_user_by_email(self, email: str) -> User | None:
-        return self.db.query(User).filter_by(email=email).first()
+        return self.db.query(User).filter(User.email==email,User.is_deleted.is_(False)).first()
 
     def get_student_by_id(self, student_id: int) -> User | None:
         return (
@@ -49,8 +49,9 @@ class UserRepository:
     def delete(self, user: User) -> None:
         self.db.delete(user)
 
-    def soft_delete (self, user:User) -> None:
+    def soft_delete(self, user: User) -> None:
         user.is_deleted = True
+
 
 
 

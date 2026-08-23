@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from app.models import Lesson, Material
+from app.models.course import Lesson, Material
 
 
 class MaterialRepository:

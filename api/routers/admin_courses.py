@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, Form, HTTPException, Request, status
+from fastapi.openapi.models import Response
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
@@ -48,17 +49,16 @@ def create_course(
     return RedirectResponse("/admin/courses", status_code=status.HTTP_303_SEE_OTHER)
 
 
-@admin_courses_router.post("/courses/{course_id}")
+@admin_courses_router.delete("/courses/{course_id}")
 def delete_course(
     course_id: int,
     service: CourseService = Depends(get_course_service),
 ):
     try:
-        service.delete_course(course_id)
+        service.deactivate_course(course_id)
     except CourseNotFoundError:
         raise HTTPException(status_code=404, detail="Course not found")
-    return RedirectResponse("/admin/courses", status_code=status.HTTP_303_SEE_OTHER)
-
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 @admin_courses_router.get("/courses/{course_id}/units", response_class=HTMLResponse)
 def display_course_units(

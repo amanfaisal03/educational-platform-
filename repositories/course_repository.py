@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from app.models import Course, Lesson, Unit
+from app.models.course import Course,Lesson, Unit
 
 
 class CourseRepository:
@@ -8,10 +8,10 @@ class CourseRepository:
         self.db = db
 
     def list_courses(self) -> list[Course]:
-        return self.db.query(Course).all()
+        return self.db.query(Course).filter(Course.is_active.is_(True)).all()
 
     def get_course_by_id(self, course_id: int) -> Course | None:
-        return self.db.query(Course).filter(Course.id == course_id).first()
+        return self.db.query(Course).filter(Course.id == course_id ,Course.is_active.is_(True)).first()
 
     def get_course_by_name(self, name: str) -> Course | None:
         return self.db.query(Course).filter(Course.name == name).first()
@@ -23,9 +23,8 @@ class CourseRepository:
         self.db.refresh(course)
         return course
 
-    def delete_course(self, course: Course) -> None:
-        self.db.delete(course)
-        self.db.flush()
+    def deactivate_course(self, course: Course) -> None:
+        course.is_active = False
 
     def get_unit_by_id(self, unit_id: int) -> Unit | None:
         return self.db.query(Unit).filter(Unit.id == unit_id).first()

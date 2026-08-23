@@ -8,6 +8,7 @@ from repositories.user_courses_repository import UserCourseRepository
 from repositories.user_repository import UserRepository
 from services.auth_service import AuthService
 from services.course_service import CourseService
+from services.deletion_policies import SoftDeleteStudentDeletionPolicy
 from services.enrollment_service import EnrollmentService
 from services.material_service import MaterialService
 from services.student_admin_services import StudentAdminService
@@ -33,9 +34,10 @@ def get_token_service() -> TokenService:
 def get_student_admin_service(
     db: Session = Depends(get_db_session),
 ) -> StudentAdminService:
+    users = UserRepository(db)
     return StudentAdminService(
-        users=UserRepository(db),
-        enrollments=UserCourseRepository(db),
+        users=users,
+        deletion_policy=SoftDeleteStudentDeletionPolicy(users),
     )
 
 
