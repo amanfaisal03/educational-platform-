@@ -32,6 +32,7 @@ class SoftDeleteStudentDeletionPolicy:
         self.users.soft_delete(student)
 
 
+
 __all__ = [
     "StudentDeletionPolicy",
     "SoftDeleteStudentDeletionPolicy",

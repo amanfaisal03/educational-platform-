@@ -45,7 +45,7 @@ def register(
         )
 
     return RedirectResponse(
-        "/sign_in",
+        "/api/v1/auth/sign_in",
         status_code=303,
     )
 
@@ -69,7 +69,7 @@ def login(
         )
 
     token = token_service.create_access_token(user.id)
-    destination = "/admin" if user.role == "admin" else "/student/allcourses"
+    destination = "/admin" if user.role == "admin" else "/api/v1/student/mycourses"
     response = RedirectResponse(destination, status_code=status.HTTP_303_SEE_OTHER)
     response.set_cookie(
         "authorization",
@@ -84,6 +84,7 @@ def login(
 
 
 @auth_router.get("/signout", include_in_schema=False)
+
 @auth_router.post("/signout")
 def logout():
     response = RedirectResponse("/", status_code=status.HTTP_303_SEE_OTHER)

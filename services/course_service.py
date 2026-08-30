@@ -5,7 +5,7 @@ from services.exceptions import (
     CourseNotFoundError,
     EmptyTitleError,
     LessonAlreadyExistsError,
-    UnitNotFoundError,
+    UnitNotFoundError, LessonNotFoundError,
 )
 
 
@@ -55,6 +55,21 @@ class CourseService:
         if self.courses.get_lesson_by_title(unit_id, normalized_title) is not None:
             raise LessonAlreadyExistsError(normalized_title)
         return self.courses.add_lesson(unit_id, normalized_title)
+
+
+    def get_units_by_course_id(self, course_id: int) -> list[Unit]:
+        units = self.courses.get_units_by_course_id(course_id)
+        if units is None:
+            raise UnitNotFoundError(course_id)
+        return units
+
+    def get_lessons_by_unit_id(self, unit_id: int) -> list[Lesson]:
+        lesson=self.courses.get_lessons_by_unit_id(unit_id)
+        if lesson is None:
+            raise LessonNotFoundError(unit_id)
+        return lesson
+
+
 
 
 __all__ = ["CourseService"]

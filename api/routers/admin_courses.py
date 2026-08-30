@@ -60,21 +60,6 @@ def delete_course(
         raise HTTPException(status_code=404, detail="Course not found")
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
-@admin_courses_router.get("/courses/{course_id}/units", response_class=HTMLResponse)
-def display_course_units(
-    request: Request,
-    course_id: int,
-    service: CourseService = Depends(get_course_service),
-):
-    try:
-        course = service.get_course(course_id)
-    except CourseNotFoundError:
-        raise HTTPException(status_code=404, detail="Course not found")
-    return templates.TemplateResponse(
-        request=request,
-        name="admin/units.html",
-        context={"course": course},
-    )
 
 
 @admin_courses_router.post("/units")
@@ -102,7 +87,7 @@ def display_unit_lessons(
     service: CourseService = Depends(get_course_service),
 ):
     try:
-        unit = service.get_unit(unit_id)
+        unit = service.get_lessons_by_unit_id(unit_id)
     except UnitNotFoundError:
         raise HTTPException(status_code=404, detail="Unit not found")
     return templates.TemplateResponse(

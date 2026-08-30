@@ -13,7 +13,7 @@ class EnrollmentService:
         self.courses = courses
         self.enrollments = enrollments
 
-    def enroll(self, user_id: int, course_id: int) -> UserCourse:
+    def buy_course(self, user_id: int, course_id: int) -> UserCourse:
         if self.courses.get_course_by_id(course_id) is None:
             raise CourseNotFoundError(course_id)
 
