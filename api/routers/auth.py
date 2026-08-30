@@ -69,7 +69,7 @@ def login(
         )
 
     token = token_service.create_access_token(user.id)
-    destination = "/admin" if user.role == "admin" else "/api/v1/student/mycourses"
+    destination = "/api/v1/admin" if user.role == "admin" else "/api/v1/student/mycourses"
     response = RedirectResponse(destination, status_code=status.HTTP_303_SEE_OTHER)
     response.set_cookie(
         "authorization",

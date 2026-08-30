@@ -34,11 +34,7 @@ class CourseService:
         course = self.get_course(course_id)
         self.courses.deactivate_course(course)
 
-    def get_unit(self, unit_id: int) -> Unit:
-        unit = self.courses.get_unit_by_id(unit_id)
-        if unit is None:
-            raise UnitNotFoundError(unit_id)
-        return unit
+
 
     def create_unit(self, course_id: int, title: str) -> Unit:
         normalized_title = title.strip()
@@ -51,7 +47,7 @@ class CourseService:
         normalized_title = title.strip()
         if not normalized_title:
             raise EmptyTitleError()
-        self.get_unit(unit_id)
+        self.get_units_by_course_id(unit_id)
         if self.courses.get_lesson_by_title(unit_id, normalized_title) is not None:
             raise LessonAlreadyExistsError(normalized_title)
         return self.courses.add_lesson(unit_id, normalized_title)

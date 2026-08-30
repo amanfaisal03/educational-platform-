@@ -35,7 +35,7 @@ async def _upload(
         raise HTTPException(status_code=400, detail="Uploaded file is empty")
 
     return RedirectResponse(
-        f"/admin/units/{result.unit_id}/lessons",
+        f"/api/v1/admin/units/{result.unit_id}/lessons",
         status_code=status.HTTP_303_SEE_OTHER,
     )
 

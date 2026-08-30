@@ -1,5 +1,5 @@
-from fastapi import APIRouter, Depends, Form, HTTPException, Request, status
-from fastapi.openapi.models import Response
+
+from fastapi import APIRouter, Depends, HTTPException, Response, status,Form,  Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
@@ -46,7 +46,7 @@ def create_course(
         raise HTTPException(status_code=400, detail="Course title is required")
     except CourseAlreadyExistsError:
         raise HTTPException(status_code=409, detail="Course already exists")
-    return RedirectResponse("/admin/courses", status_code=status.HTTP_303_SEE_OTHER)
+    return RedirectResponse("/api/v1/admin/courses", status_code=status.HTTP_303_SEE_OTHER)
 
 
 @admin_courses_router.delete("/courses/{course_id}")
@@ -75,25 +75,29 @@ def create_course_unit(
     except EmptyTitleError:
         raise HTTPException(status_code=400, detail="Unit title is required")
     return RedirectResponse(
-        f"/admin/courses/{course_id}/units",
+        f"/api/v1/admin/courses/{course_id}/units",
         status_code=status.HTTP_303_SEE_OTHER,
     )
 
-
-@admin_courses_router.get("/units/{unit_id}/lessons", response_class=HTMLResponse)
-def display_unit_lessons(
+@admin_courses_router.get("/courses/{course_id}/units")
+def display_units(
     request: Request,
-    unit_id: int,
+    course_id: int,
     service: CourseService = Depends(get_course_service),
 ):
     try:
-        unit = service.get_lessons_by_unit_id(unit_id)
+        course = service.get_course(course_id)
+        units = service.get_units_by_course_id(course_id)
     except UnitNotFoundError:
         raise HTTPException(status_code=404, detail="Unit not found")
+
     return templates.TemplateResponse(
         request=request,
-        name="admin/lessons.html",
-        context={"unit": unit},
+        name="/admin/units.html",
+        context={
+            "course": course,
+            "units": units,
+        },
     )
 
 
@@ -112,6 +116,23 @@ def create_unit_lesson(
     except EmptyTitleError:
         raise HTTPException(status_code=400, detail="Lesson title is required")
     return RedirectResponse(
-        f"/admin/units/{unit_id}/lessons",
+        f"/api/v1/admin/units/{unit_id}/lessons",
         status_code=status.HTTP_303_SEE_OTHER,
     )
+
+@admin_courses_router.get("/units/{unit_id}/lessons", response_class=HTMLResponse)
+def display_unit_lessons(
+    request: Request,
+    unit_id: int,
+    service: CourseService = Depends(get_course_service),
+):
+    try:
+        unit = service.get_lessons_by_unit_id(unit_id)
+    except UnitNotFoundError:
+        raise HTTPException(status_code=404, detail="Unit not found")
+    return templates.TemplateResponse(
+        request=request,
+        name="admin/lessons.html",
+        context={"unit": unit},
+    )
+

@@ -32,6 +32,9 @@ class CourseRepository:
     def get_unit_by_id(self, unit_id: int) -> Unit | None:
         return self.db.query(Unit).filter(Unit.id == unit_id).first()
 
+
+
+
     def add_unit(self, course_id: int, title: str) -> Unit:
         unit = Unit(title=title, course_id=course_id)
         self.db.add(unit)
@@ -53,7 +56,15 @@ class CourseRepository:
             .first()
         )
     def get_lessons_by_unit_id(self, unit_id: int) -> list[Lesson] | None:
-        return (self.db.query(Lesson).filter(Lesson.unite_id == unit_id,Lesson.unit_id.is_active.is_(True)).all())
+        return (
+            self.db.query(Lesson)
+            .filter(
+                Lesson.unite_id == unit_id,
+                Lesson.is_active.is_(True),
+                Lesson.unit.has(Unit.is_active.is_(True)),
+            )
+            .all()
+        )
 
     def add_lesson(self, unit_id: int, title: str) -> Lesson:
         lesson = Lesson(title=title, unite_id=unit_id)
