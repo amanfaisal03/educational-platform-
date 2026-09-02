@@ -116,8 +116,10 @@ def create_unit_lesson(
     except EmptyTitleError:
         raise HTTPException(status_code=400, detail="Lesson title is required")
     return RedirectResponse(
-        f"/api/v1/admin/units/{unit_id}/lessons",
+        f"/api/v1/student/units/{unit_id}/lessons",
         status_code=status.HTTP_303_SEE_OTHER,
     )
+
+
 
 
