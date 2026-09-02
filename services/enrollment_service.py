@@ -1,14 +1,34 @@
+from typing import Protocol
+
 from app.models import Course, UserCourse
-from repositories.course_repository import CourseRepository
-from repositories.user_courses_repository import UserCourseRepository
 from services.exceptions import CourseNotFoundError
+
+
+class CourseLookup(Protocol):
+    def get_course_by_id(self, course_id: int) -> Course | None:
+        ...
+
+
+class EnrollmentStore(Protocol):
+    def get_enrollment(
+        self,
+        user_id: int,
+        course_id: int,
+    ) -> UserCourse | None:
+        ...
+
+    def add(self, user_id: int, course_id: int) -> UserCourse:
+        ...
+
+    def list_courses_for_student(self, user_id: int) -> list[Course]:
+        ...
 
 
 class EnrollmentService:
     def __init__(
         self,
-        courses: CourseRepository,
-        enrollments: UserCourseRepository,
+        courses: CourseLookup,
+        enrollments: EnrollmentStore,
     ) -> None:
         self.courses = courses
         self.enrollments = enrollments
@@ -27,4 +47,4 @@ class EnrollmentService:
         return self.enrollments.list_courses_for_student(user_id)
 
 
-__all__ = ["EnrollmentService"]
+__all__ = ["CourseLookup", "EnrollmentStore", "EnrollmentService"]
