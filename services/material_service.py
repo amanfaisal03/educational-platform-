@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from typing import Protocol
 
 from app.models import Material
 from repositories.material_repository import MaterialRepository
@@ -9,15 +9,30 @@ from services.exceptions import (
 )
 
 
-@dataclass(frozen=True)
 class MaterialCreationResult:
-    material: Material
-    unit_id: int
+    def __init__(self, material: Material, unit_id: int):
+        self.material = material
+        self.unit_id = unit_id
 
 
-class MaterialService:
+class MaterialServiceContract(Protocol):
+    ALLOWED_TYPES: set[str]
+
+    def get_material(self, lesson_id: int, material_type: str) -> Material:
+        ...
+
+    def create_material(
+        self,
+        lesson_id: int,
+        material_type: str,
+        file_data: bytes,
+    ) -> MaterialCreationResult:
+        ...
+
+
+class MaterialService(MaterialServiceContract):
+
     ALLOWED_TYPES = {"pdf", "video"}
-
     def __init__(self, repository: MaterialRepository):
         self.repository = repository
 
@@ -56,4 +71,4 @@ class MaterialService:
         return MaterialCreationResult(material=material, unit_id=lesson.unite_id)
 
 
-__all__ = ["MaterialCreationResult", "MaterialService"]
+__all__ = ["MaterialCreationResult", "MaterialService","MaterialServiceContract"]

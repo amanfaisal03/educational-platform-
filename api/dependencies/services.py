@@ -16,24 +16,22 @@ from services.token_service import TokenService
 
 
 def get_material_service(
-    db: Session = Depends(get_db_session),
-) -> MaterialService:
+    db: Session = Depends(get_db_session)) :
     return MaterialService(MaterialRepository(db))
 
 
 def get_auth_service(
-    db: Session = Depends(get_db_session),
-) -> AuthService:
+    db: Session = Depends(get_db_session)) :
     return AuthService(UserRepository(db))
 
 
-def get_token_service() -> TokenService:
+def get_token_service() :
     return TokenService.from_settings()
 
 
 def get_student_admin_service(
     db: Session = Depends(get_db_session),
-) -> StudentAdminService:
+) :
     users = UserRepository(db)
     return StudentAdminService(
         users=users,
@@ -43,13 +41,13 @@ def get_student_admin_service(
 
 def get_course_service(
     db: Session = Depends(get_db_session),
-) -> CourseService:
+):
     return CourseService(CourseRepository(db))
 
 
 def get_enrollment_service(
     db: Session = Depends(get_db_session),
-) -> EnrollmentService:
+):
     return EnrollmentService(
         courses=CourseRepository(db),
         enrollments=UserCourseRepository(db),
