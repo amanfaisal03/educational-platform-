@@ -120,19 +120,4 @@ def create_unit_lesson(
         status_code=status.HTTP_303_SEE_OTHER,
     )
 
-@admin_courses_router.get("/units/{unit_id}/lessons", response_class=HTMLResponse)
-def display_unit_lessons(
-    request: Request,
-    unit_id: int,
-    service: CourseService = Depends(get_course_service),
-):
-    try:
-        unit = service.get_lessons_by_unit_id(unit_id)
-    except UnitNotFoundError:
-        raise HTTPException(status_code=404, detail="Unit not found")
-    return templates.TemplateResponse(
-        request=request,
-        name="admin/lessons.html",
-        context={"unit": unit},
-    )
 

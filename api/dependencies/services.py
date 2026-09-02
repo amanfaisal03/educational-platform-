@@ -16,8 +16,12 @@ from services.token_service import TokenService
 
 
 def get_material_service(
-    db: Session = Depends(get_db_session)) :
-    return MaterialService(MaterialRepository(db))
+    db: Session = Depends(get_db_session),
+):
+    return MaterialService(
+        repository=MaterialRepository(db),
+        enrollments=UserCourseRepository(db),
+    )
 
 
 def get_auth_service(

@@ -3,7 +3,8 @@ from fastapi.responses import Response
 
 from api.dependencies.authorization import require_student
 from api.dependencies.services import get_material_service
-from services.exceptions import LessonNotFoundError
+from app.models.user import User
+from services.exceptions import CourseAccessDeniedError, LessonNotFoundError
 from services.material_service import MaterialService
 
 
@@ -18,14 +19,21 @@ def _get_material(
     lesson_id: int,
     material_type: str,
     service: MaterialService,
+    student_id: int,
 ) -> Response:
     try:
-        material = service.get_material(lesson_id, material_type)
+        material = service.get_material(
+            lesson_id,
+            material_type,
+            student_id=student_id,
+        )
     except LessonNotFoundError:
         raise HTTPException(
             status_code=404,
             detail=f"{material_type.title()} not found",
         )
+    except CourseAccessDeniedError:
+        raise HTTPException(status_code=403, detail="Course enrollment required")
 
     content_types = {"video": "video/mp4", "pdf": "application/pdf"}
     return Response(
@@ -37,14 +45,16 @@ def _get_material(
 @materials_router.get("/{lesson_id}/video")
 def get_video(
     lesson_id: int,
+    student: User = Depends(require_student),
     service: MaterialService = Depends(get_material_service),
 ):
-    return _get_material(lesson_id, "video", service)
+    return _get_material(lesson_id, "video", service, student.id)
 
 
 @materials_router.get("/{lesson_id}/pdf")
 def get_pdf(
     lesson_id: int,
+    student: User = Depends(require_student),
     service: MaterialService = Depends(get_material_service),
 ):
-    return _get_material(lesson_id, "pdf", service)
+    return _get_material(lesson_id, "pdf", service, student.id)

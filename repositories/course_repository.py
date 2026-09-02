@@ -13,7 +13,7 @@ class CourseRepository:
     def get_course_by_id(self, course_id: int) -> Course | None:
         return self.db.query(Course).filter(Course.id == course_id ,Course.is_active.is_(True)).first()
 
-    def get_units_by_course_id(self, course_id: int) -> list[Unit] | None:
+    def get_units_by_course_id(self, course_id: int) -> list[Unit]:
         return self.db.query(Unit).filter(Unit.course_id == course_id,Unit.is_active.is_(True)).all()
 
     def get_course_by_name(self, name: str) -> Course | None:
@@ -55,7 +55,7 @@ class CourseRepository:
             )
             .first()
         )
-    def get_lessons_by_unit_id(self, unit_id: int) -> list[Lesson] | None:
+    def get_lessons_by_unit_id(self, unit_id: int) -> list[Lesson]:
         return (
             self.db.query(Lesson)
             .filter(

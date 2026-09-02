@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, Form, Request, status, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from api.dependencies.services import get_auth_service, get_token_service
+from app.core.Config import settings
 from app.schemas.auth import LoginRequest, StudentRegistrationRequest
 from services.auth_service import AuthService
 from services.exceptions import UserAlreadyExistsError, InvalidCredentialsError
@@ -75,7 +76,7 @@ def login(
         "authorization",
         f"Bearer {token}",
         httponly=True,
-        secure=False,
+        secure=settings.secure_cookies,
         samesite="lax",
         max_age=3600,
         path="/",

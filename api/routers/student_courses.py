@@ -67,29 +67,14 @@ def display_course_units(
     service: CourseService = Depends(get_course_service),
 ):
     try:
-        course = service.get_units_by_course_id(course_id)
+        course = service.get_course(course_id)
+        units = service.get_units_by_course_id(course_id)
     except CourseNotFoundError:
         raise HTTPException(status_code=404, detail="Course not found")
     return templates.TemplateResponse(
         request=request,
         name="student/units.html",
-        context={"course": course},
-    )
-
-@student_courses_router.get("/courses/{course_id}/units", response_class=HTMLResponse)
-def display_course_units(
-    request: Request,
-    course_id: int,
-    service: CourseService = Depends(get_course_service),
-):
-    try:
-        course = service.get_course(course_id)
-    except CourseNotFoundError:
-        raise HTTPException(status_code=404, detail="Course not found")
-    return templates.TemplateResponse(
-        request=request,
-        name="admin/units.html",
-        context={"course": course},
+        context={"course": course, "units": units},
     )
 
 @student_courses_router.get("/units/{unit_id}/lessons", response_class=HTMLResponse)
@@ -107,5 +92,3 @@ def display_unit_lessons(
         name="student/lessons.html",
         context={"unite": unit},
     )
-
-

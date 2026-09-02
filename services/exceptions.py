@@ -2,6 +2,10 @@ class LessonNotFoundError(Exception):
     pass
 
 
+class CourseAccessDeniedError(Exception):
+    pass
+
+
 class InvalidMaterialTypeError(Exception):
     pass
 
