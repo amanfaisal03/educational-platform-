@@ -17,7 +17,7 @@
 
 <h1>Units for {{ course.name }}</h1>
 <h3> you can add unit  </h3>
-<form action="/admin/units" method="post" class="card">
+<form action="/api/v1/admin/units" method="post" class="card">
 
     <input type="hidden" name="course_id" value="{{ course.id }}">
     <input type="text" name="title" placeholder="Unit title" required>
@@ -31,16 +31,16 @@
 <div  class="card">
     <h3>{{ unit.title }}</h3>
 
-    <a href="/admin/units/{{ unit.id }}/lessons">Lessons for this unit</a>
+    <a href="/api/v1/admin/units/{{ unit.id }}/lessons">Lessons for this unit</a>
 </div>
 {% endfor %}
 
 <div class="card">
- <a href="/admin/courses">BACK TO COURSE</a>
+ <a href="/api/v1/admin/courses">BACK TO COURSE</a>
 </div>
 
 <div class="card">
-    <a href="/" > SIGN OUT</a>
+    <a href="/api/v1/auth/signout" > SIGN OUT</a>
 </div>
 
 </body>

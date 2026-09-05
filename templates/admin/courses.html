@@ -19,7 +19,7 @@
 <h1>Course Dashboard</h1>
 
 <h3> hi teacher , you can add course  : </h3>
-<form action="/admin/add_courses" method="post" class ="card" >
+<form action="/api/v1/admin/add_courses" method="post" class ="card" >
     <input type="text" name="title" placeholder="Course title" required>
     <button type="submit">Add Course</button>
 </form>
@@ -32,11 +32,11 @@
 
     <h3>{{ course.name }}</h3>
 
-    <a href="/admin/courses/{{ course.id }}/units">
+    <a href="/api/v1/admin/courses/{{ course.id }}/units">
         Unite for this course
     </a>
 
-    <form action="/admin/courses/{{ course.id }}" method="post">
+    <form action="/api/v1/admin/courses/{{ course.id }}" method="post">
         <button type="submit">Delete course</button>
     </form>
 
@@ -50,11 +50,11 @@
 
 
 <div class="card" >
-<a href="/admin">Back to Admin</a>
+<a href="/api/v1/admin">Back to Admin</a>
   </div>
     
 <div class="card">
-    <a href="/" > sign out </a>      
+    <a href="/api/v1/auth/signout"> sign out </a>
 </div>
 
 </body>

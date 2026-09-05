@@ -34,8 +34,8 @@
 
     <div class="start">
         <h2>Student Dashboard</h2>
-        <a href="/student/mycourses">my courses</a>
-        <a href="/signout">Sign Out</a>
+        <a href="/api/v1/student/mycourses">my courses</a>
+        <a href="/api/v1/auth/signout">Sign Out</a>
     </div>
 
     <div>
@@ -50,13 +50,13 @@
 
                 <h3>{{ course.name }}</h3>
 
-                <form action="api/v1/student/add-course/{{course.id }}" method="post">
+                <form action="/api/v1/student/buy-course/{{ course.id }}" method="post">
                     <button type="submit">
                         Add Course
                     </button>
                 </form>
 
-                <a href="/student/courses/{{ course.id }}/units">
+                <a href="/api/v1/student/courses/{{ course.id }}/units">
                     View Course
                 </a>
 

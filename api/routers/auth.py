@@ -25,7 +25,7 @@ def registration_page(request: Request):
     return templates.TemplateResponse(request=request, name="register.html", context={})
 
 
-@auth_router.post("/auth/register")
+@auth_router.post("/register")
 def register(
     name: str = Form(...),
     email: str = Form(...),
@@ -88,6 +88,6 @@ def login(
 
 @auth_router.post("/signout")
 def logout():
-    response = RedirectResponse("/", status_code=status.HTTP_303_SEE_OTHER)
+    response = RedirectResponse("/api/v1/auth/sign_in", status_code=status.HTTP_303_SEE_OTHER)
     response.delete_cookie("authorization", path="/")
     return response

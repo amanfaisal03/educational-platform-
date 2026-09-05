@@ -49,6 +49,7 @@ def create_course(
     return RedirectResponse("/api/v1/admin/courses", status_code=status.HTTP_303_SEE_OTHER)
 
 
+@admin_courses_router.post("/courses/{course_id}")
 @admin_courses_router.delete("/courses/{course_id}")
 def delete_course(
     course_id: int,
@@ -119,7 +120,6 @@ def create_unit_lesson(
         f"/api/v1/student/units/{unit_id}/lessons",
         status_code=status.HTTP_303_SEE_OTHER,
     )
-
 
 
 
