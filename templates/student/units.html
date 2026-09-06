@@ -1,23 +1,40 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Units</title>
     <link rel="stylesheet" href="/static/styles.css">
 </head>
 
 <body>
+<nav class="topbar">
+    <a class="brand" href="/api/v1/student/allcourses">LearnSpace</a>
+    <div class="nav-links">
+        <a href="/api/v1/student/mycourses">My courses</a>
+        <a href="/api/v1/auth/signout">Sign out</a>
+    </div>
+</nav>
 <main>
-<h1>Course Units</h1>
+<div class="breadcrumb"><a href="/api/v1/student/mycourses">My courses</a><span>/</span><strong>{{ course.name }}</strong></div>
+<span class="eyebrow">Course roadmap</span>
+<h1>Course units</h1>
+<div class="course-summary">
+    <div class="course-icon" aria-hidden="true">C</div>
+    <div><span class="entity-label">Course</span><h2>{{ course.name }}</h2><p>Choose a unit to see its lessons.</p></div>
+</div>
+<div class="section-heading"><div><h2>Your learning path</h2><p>Units are the main sections of this course.</p></div></div>
 
 {% for unit in course.units %}
 
-    <div class="card">
+    <div class="card course-row unit-card">
 
-        <h3>{{ unit.title }}</h3>
+        <div>
+            <span class="entity-label unit">Unit {{ loop.index }}</span>
+            <h3>{{ unit.title }}</h3>
+            <span class="muted">Lessons inside this unit</span>
+        </div>
 
-        <a href="/api/v1/student/units/{{ unit.id }}/lessons">
-            View Lessons
-        </a>
+        <a class="button" href="/api/v1/student/units/{{ unit.id }}/lessons">View lessons</a>
 
     </div>
                                            

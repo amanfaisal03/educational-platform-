@@ -36,12 +36,17 @@ def display_all_courses(
 def display_my_courses(
     request: Request,
     student: User = Depends(require_student),
-    service: EnrollmentService = Depends(get_enrollment_service),
+    enrollment_service: EnrollmentService = Depends(get_enrollment_service),
+    course_service: CourseService = Depends(get_course_service),
 ):
+    enrolled_courses = enrollment_service.list_courses_for_student(student.id)
     return templates.TemplateResponse(
         request=request,
         name="student/mycourses.html",
-        context={"courses": service.list_courses_for_student(student.id)},
+        context={
+            "courses": course_service.list_courses(),
+            "enrolled_course_ids": {course.id for course in enrolled_courses},
+        },
     )
 
 

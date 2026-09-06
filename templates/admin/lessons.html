@@ -6,7 +6,15 @@
     <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
+<nav class="topbar">
+    <a class="brand" href="/api/v1/admin">LearnSpace Admin</a>
+    <div class="nav-links">
+        <a href="/api/v1/admin/courses">Courses</a>
+        <a href="/api/v1/auth/signout">Sign out</a>
+    </div>
+</nav>
 <main>
+    <span class="eyebrow">Lesson management</span>
     <h1>{{ unit.title }}</h1>
 
     <div class="card">

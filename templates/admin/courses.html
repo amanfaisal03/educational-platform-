@@ -6,30 +6,51 @@
     <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
+<nav class="topbar">
+    <a class="brand" href="/api/v1/admin">LearnSpace Admin</a>
+    <div class="nav-links">
+        <a href="/api/v1/admin">Dashboard</a>
+        <a href="/api/v1/auth/signout">Sign out</a>
+    </div>
+</nav>
 <main>
-<h1>Course Dashboard</h1>
+<span class="eyebrow">Content management</span>
+<h1>Course dashboard</h1>
 
-<h3> hi teacher , you can add course  : </h3>
-<form action="/api/v1/admin/add_courses" method="post" class ="card" >
-    <input type="text" name="title" placeholder="Course title" required>
-    <button type="submit">Add Course</button>
+<form action="/api/v1/admin/add_courses" method="post" class="card add-course-form">
+    <div class="form-heading">
+        <span class="entity-label">New course</span>
+        <h2>Add a course</h2>
+        <p>Create a new course for students to explore.</p>
+    </div>
+    <div class="add-course-fields">
+        <label>
+            Course name
+            <input type="text" name="title" placeholder="e.g. Mathematics" required>
+        </label>
+        <button type="submit">+ Add course</button>
+    </div>
 </form>
 
 
-<h2>Existing courses</h2>
+<div class="section-heading">
+    <div><h2>Course library</h2><p>Open a course to manage its units.</p></div>
+</div>
 
 {% for course in courses %}
-<div class="card">
+<div class="card admin-course-card">
 
+    <span class="entity-label">Course</span>
     <h3>{{ course.name }}</h3>
 
-    <a href="/api/v1/admin/courses/{{ course.id }}/units">
-        Unite for this course
-    </a>
-
-    <form action="/api/v1/admin/courses/{{ course.id }}" method="post">
-        <button type="submit">Delete course</button>
-    </form>
+    <div class="course-tools">
+        <a class="secondary-button" href="/api/v1/admin/courses/{{ course.id }}/units">
+            Manage units <span aria-hidden="true">-&gt;</span>
+        </a>
+        <form class="delete-course-form" action="/api/v1/admin/courses/{{ course.id }}" method="post">
+            <button class="icon-button" type="submit" aria-label="Delete {{ course.name }}" title="Delete course">x</button>
+        </form>
+    </div>
 
 </div>
 {% endfor %}
@@ -44,9 +65,6 @@
 <a href="/api/v1/admin">Back to Admin</a>
   </div>
     
-<div class="card">
-    <a href="/api/v1/auth/signout"> sign out </a>
-</div>
 </main>
 </body>
 </html>

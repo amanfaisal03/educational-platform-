@@ -1,17 +1,32 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Lessons</title>
     <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
+<nav class="topbar">
+    <a class="brand" href="/api/v1/student/allcourses">LearnSpace</a>
+    <div class="nav-links">
+        <a href="/api/v1/student/mycourses">My courses</a>
+        <a href="/api/v1/auth/signout">Sign out</a>
+    </div>
+</nav>
 <main>
-<h1>Lessons</h1>
+<div class="breadcrumb"><a href="/api/v1/student/mycourses">My courses</a><span>/</span><strong>Lessons</strong></div>
+<span class="eyebrow">Unit learning</span>
+<h1>Lessons in this unit</h1>
+<p>Select a lesson below to watch the video or open the PDF.</p>
 {% for lesson in unite.lessons %}
 
-    <div class="lesson">
-
-        <h3>{{ lesson.title }}</h3>
+    <div class="lesson lesson-card">
+        <div class="lesson-number">{{ loop.index }}</div>
+            <span class="entity-label lesson">Lesson {{ loop.index }}</span>
+            <h3>{{ lesson.title }}</h3>
+            <span class="muted">Video and PDF materials</span>
+        </div>
 
         <div class="links">
             <a class="button" href="/api/v1/student/lessons/{{ lesson.id }}/video" target="_blank">

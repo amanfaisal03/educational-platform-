@@ -2,31 +2,69 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>My Courses</title>
     <link rel="stylesheet" href="/static/styles.css">
 </head>
 
 <body>
-
+<nav class="topbar">
+    <a class="brand" href="/api/v1/student/allcourses">LearnSpace</a>
+    <div class="nav-links">
+        <a href="/api/v1/student/allcourses">Explore courses</a>
+        <a href="/api/v1/auth/signout">Sign out</a>
+    </div>
+</nav>
 <main>
-<h1>My courses</h1>
+<div class="hero">
+    <div>
+        <span class="eyebrow">Your learning</span>
+        <h1>My learning space</h1>
+        <p>Open a course, choose a unit, and continue learning.</p>
+    </div>
+</div>
+
+<div class="stats">
+    <div class="stat"><strong>{{ enrolled_course_ids | length }}</strong><span>Joined courses</span></div>
+    <div class="stat"><strong>{{ courses | length }}</strong><span>Courses to explore</span></div>
+    <div class="stat"><strong>1</strong><span>Simple learning path</span></div>
+</div>
 
 {% if courses %}
+    <div class="section-heading">
+        <div><h2>Your course library</h2><p>Choose a course to see its units.</p></div>
+    </div>
     {% for course in courses %}
         <div class="card">
-
-            <h2>{{ course.name }}</h2>
-
-            <a class="button" href="/api/v1/student/courses/{{ course.id }}/units">
-                Enter Course
-            </a>
-
+            <div class="course-row">
+                <div>
+                    <span class="entity-label">Course</span>
+                    <h2>{{ course.name }}</h2>
+                    {% if course.id in enrolled_course_ids %}
+                        <span class="status status-success">Enrolled</span>
+                    {% else %}
+                        <span class="status">Free to join</span>
+                    {% endif %}
+                </div>
+                {% if course.id in enrolled_course_ids %}
+                    <a class="button" href="/api/v1/student/courses/{{ course.id }}/units">
+                        Open course
+                    </a>
+                {% else %}
+                    <form class="inline-form" action="/api/v1/student/buy-course/{{ course.id }}" method="post">
+                        <button type="submit">Add course</button>
+                    </form>
+                {% endif %}
+            </div>
         </div>
     {% endfor %}
 
 {% else %}
-
-    <p>No courses.</p>
+    <div class="card empty-state">
+        <h2>Your learning library is empty</h2>
+        <p>Choose a course to get started.</p>
+        <a class="button" href="/api/v1/student/allcourses">Explore courses</a>
+    </div>
 
 {% endif %}
 </main>

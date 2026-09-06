@@ -8,42 +8,73 @@
 
 </head>
 <body>
-
-    <div class="start">
-        <h2>Student Dashboard</h2>
-        <a href="/api/v1/student/mycourses">My courses</a>
-        <a href="/api/v1/auth/signout">Sign Out</a>
+    <nav class="topbar">
+        <a class="brand" href="/api/v1/student/allcourses">LearnSpace</a>
+        <div class="nav-links">
+            <a href="/api/v1/student/mycourses">My courses</a>
+            <a href="/api/v1/auth/signout">Sign out</a>
+        </div>
+    </nav>
+    <main>
+    <div class="hero">
+        <div>
+            <span class="eyebrow">Student dashboard</span>
+            <h1>Keep learning</h1>
+            <p>Explore courses and build your next learning habit.</p>
+        </div>
     </div>
 
     <div>
-
-        <h1>Courses</h1>
+        <div class="search-bar">
+            <span class="search-icon" aria-hidden="true">&#128269;</span>
+            <label for="course-search" class="muted">Find a course</label>
+            <input id="course-search" type="search" placeholder="Search by course name..." autocomplete="off">
+        </div>
 
         <div class="courses">
 
             {% for course in courses %}
 
-            <div class="card">
+            <div class="card course-card" data-course-name="{{ course.name | lower }}">
 
+                <div class="course-icon" aria-hidden="true">{{ loop.index }}</div>
+                <span class="entity-label">Course</span>
                 <h3>{{ course.name }}</h3>
+                <p>Build your skills with guided units and practical lessons.</p>
 
-                <form action="/api/v1/student/buy-course/{{ course.id }}" method="post">
-                    <button type="submit">
-                        Add Course
-                    </button>
-                </form>
-
-                <a href="/api/v1/student/courses/{{ course.id }}/units">
-                    View Course
-                </a>
+                <div class="course-action">
+                    <form action="/api/v1/student/buy-course/{{ course.id }}" method="post">
+                        <button type="submit">Join course</button>
+                    </form>
+                    <a class="button" href="/api/v1/student/courses/{{ course.id }}/units">View units</a>
+                </div>
 
             </div>
 
             {% endfor %}
 
         </div>
+        <div id="no-results" class="card empty-state hidden">
+            <h2>No courses found</h2>
+            <p>Try a different search term.</p>
+        </div>
 
     </div>
-
+    </main>
+    <script>
+        const search = document.getElementById("course-search");
+        const cards = [...document.querySelectorAll("[data-course-name]")];
+        const noResults = document.getElementById("no-results");
+        search.addEventListener("input", () => {
+            const query = search.value.trim().toLowerCase();
+            let visible = 0;
+            cards.forEach((card) => {
+                const matches = card.dataset.courseName.includes(query);
+                card.classList.toggle("hidden", !matches);
+                if (matches) visible += 1;
+            });
+            noResults.classList.toggle("hidden", visible !== 0);
+        });
+    </script>
 </body>
 </html>

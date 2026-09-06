@@ -6,7 +6,15 @@
     <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
+<nav class="topbar">
+    <a class="brand" href="/api/v1/admin">LearnSpace Admin</a>
+    <div class="nav-links">
+        <a href="/api/v1/admin/courses">Courses</a>
+        <a href="/api/v1/auth/signout">Sign out</a>
+    </div>
+</nav>
 <main>
+<span class="eyebrow">Course content</span>
 <h1>Units for {{ course.name }}</h1>
 <h3> you can add unit  </h3>
 <form action="/api/v1/admin/units" method="post" class="card">
