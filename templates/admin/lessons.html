@@ -24,31 +24,39 @@
     {% for lesson in unit.lessons %}
 
     <div class="card">
+        <div class="lesson-header">
+            <h3>{{ lesson.title }}</h3>
+            <span class="muted">Lesson materials</span>
+        </div>
 
-        <h3>{{ lesson.title }}</h3>
+        <div class="material-actions">
+            {% set pdf = lesson.materials | selectattr("type", "equalto", "pdf") | selectattr("is_active") | list %}
+            {% set video = lesson.materials | selectattr("type", "equalto", "video") | selectattr("is_active") | list %}
+            {% if pdf %}
+                <a class="button" href="/api/v1/admin/lessons/{{ lesson.id }}/pdf" target="_blank">Open PDF</a>
+            {% endif %}
+            {% if video %}
+                <a class="button" href="/api/v1/admin/lessons/{{ lesson.id }}/video" target="_blank">Watch video</a>
+            {% endif %}
+            {% if not pdf and not video %}
+                <span class="muted">No materials uploaded yet.</span>
+            {% endif %}
+        </div>
 
-        <form action="/api/v1/admin/lessons/upload-pdf" method="post" enctype="multipart/form-data">
-
-            <input type="hidden" name="lesson_id" value="{{ lesson.id }}">
-
-            <input type="file" name="file" accept=".pdf" required>
-
-            <button type="submit">Upload PDF</button>
-
-        </form>
-
-        <br>
-
-        <form action="/api/v1/admin/lessons/upload-video" method="post" enctype="multipart/form-data">
-
-            <input type="hidden" name="lesson_id" value="{{ lesson.id }}">
-
-            <input type="file" name="file" accept="video/*" required>
-
-            <button type="submit">Upload Video</button>
-
-        </form>
-
+        <div class="upload-grid">
+            <form class="upload-form" action="/api/v1/admin/lessons/upload-pdf" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="lesson_id" value="{{ lesson.id }}">
+                <label>Replace PDF</label>
+                <input type="file" name="file" accept=".pdf" required>
+                <button type="submit">Upload PDF</button>
+            </form>
+            <form class="upload-form" action="/api/v1/admin/lessons/upload-video" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="lesson_id" value="{{ lesson.id }}">
+                <label>Replace video</label>
+                <input type="file" name="file" accept="video/*" required>
+                <button type="submit">Upload video</button>
+            </form>
+        </div>
     </div>
 
     {% endfor %}

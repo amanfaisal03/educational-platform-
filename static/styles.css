@@ -61,9 +61,16 @@ button:hover, .button:hover { background: var(--primary-dark); text-decoration: 
 .grid, .courses { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
 .card form { box-shadow: none; border: 0; padding: 0; }
 .actions, .links, .start { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 28px; }
+.lesson-header { display: flex; justify-content: space-between; gap: 16px; align-items: baseline; margin-bottom: 18px; }
+.lesson-header h3 { margin-bottom: 0; }
+.material-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 22px; }
+.upload-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.upload-form { max-width: none; padding: 16px !important; background: var(--background); }
+.upload-form button { width: 100%; }
 .muted { color: var(--muted); }
 
 @media (max-width: 600px) {
     main, .page { padding: 28px 16px; }
     form, .card, .lesson { padding: 18px; }
+    .lesson-header, .upload-grid { grid-template-columns: 1fr; display: grid; }
 }
