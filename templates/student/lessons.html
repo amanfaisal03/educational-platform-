@@ -16,10 +16,10 @@
 </nav>
 <main>
 <div class="breadcrumb"><a href="/api/v1/student/mycourses">My courses</a><span>/</span><strong>Lessons</strong></div>
-<span class="eyebrow">Unit learning</span>
+<!--<span class="eyebrow">Unit learning</span>-->
 <h1>Lessons in this unit</h1>
 <p>Select a lesson below to watch the video or open the PDF.</p>
-{% for lesson in unite.lessons %}
+{% for lesson in unit.lessons %}
 
     <div class="lesson lesson-card">
         <div class="lesson-number">{{ loop.index }}</div>

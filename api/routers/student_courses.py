@@ -96,5 +96,5 @@ def display_unit_lessons(
     return templates.TemplateResponse(
         request=request,
         name="student/lessons.html",
-        context={"unite": unit , "lessons": lesson},
+        context={"unit": unit, "lessons": lesson},
     )

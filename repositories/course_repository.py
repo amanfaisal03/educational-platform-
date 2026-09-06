@@ -50,7 +50,7 @@ class CourseRepository:
         return (
             self.db.query(Lesson)
             .filter(
-                Lesson.unite_id == unit_id,
+                Lesson.unit_id == unit_id,
                 Lesson.title == title,
             )
             .first()
@@ -59,7 +59,7 @@ class CourseRepository:
         return (
             self.db.query(Lesson)
             .filter(
-                Lesson.unite_id == unit_id,
+                Lesson.unit_id == unit_id,
                 Lesson.is_active.is_(True),
                 Lesson.unit.has(Unit.is_active.is_(True)),
             )
@@ -67,7 +67,7 @@ class CourseRepository:
         )
 
     def add_lesson(self, unit_id: int, title: str) -> Lesson:
-        lesson = Lesson(title=title, unite_id=unit_id)
+        lesson = Lesson(title=title, unit_id=unit_id)
         self.db.add(lesson)
         self.db.flush()
         self.db.refresh(lesson)

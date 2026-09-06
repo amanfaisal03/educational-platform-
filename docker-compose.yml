@@ -1,7 +1,7 @@
 services:
   postgres:
     image: pgvector/pgvector:pg16
-    container_name: educational-platform-postgres
+    container_name: postgres
 
     environment:
       POSTGRES_USER: platform_user
@@ -24,7 +24,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: educational-platform-backend
+    container_name: backend
     env_file:
       - .env
     environment:
@@ -37,7 +37,7 @@ services:
 
   frontend:
     image: nginx:1.27-alpine
-    container_name: educational-platform-frontend
+    container_name: frontend
     ports:
       - "8080:80"
     volumes:

@@ -47,7 +47,7 @@ class Lesson(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     title = Column(String(255), nullable=False)
-    unite_id = Column(
+    unit_id = Column(
         Integer,
         ForeignKey("units.id", ondelete="CASCADE"),
         nullable=False,

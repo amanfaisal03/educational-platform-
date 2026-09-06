@@ -95,7 +95,7 @@ class MaterialService(MaterialServiceContract):
             material_type=material_type,
             file_data=file_data,
         )
-        return MaterialCreationResult(material=material, unit_id=lesson.unite_id)
+        return MaterialCreationResult(material=material, unit_id=lesson.unit_id)
 
 
 __all__ = ["MaterialCreationResult", "MaterialService","MaterialServiceContract"]
