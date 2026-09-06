@@ -2,22 +2,11 @@
 <html>
 <head>
     <title>Units</title>
+    <link rel="stylesheet" href="/static/styles.css">
 </head>
 
-<style>
-
-    .card{
-            background: white;
-            padding: 15px;
-            width: 240px;
-            border: 1px solid #e0e0e0;
-            border-radius: 6px;
-        }
-
-</style>
-
 <body>
-
+<main>
 <h1>Course Units</h1>
 
 {% for unit in course.units %}
@@ -33,6 +22,6 @@
     </div>
                                            
 {% endfor %}
-
+</main>
 </body>
 </html>

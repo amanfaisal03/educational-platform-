@@ -1,18 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Learning App</title>
-    <style>
-        .section { display: none; }
-        .section.active { display: block; }
-    </style>
+    <title>Log in | Learning App</title>
+    <link rel="stylesheet" href="/static/styles.css">
 </head>
 
 <body>
 
-<div class="section active">
+<main>
     <form action="/api/v1/auth/sign_in" method="post">
-        <h3>Log In</h3>
+        <h1>Welcome back</h1>
+        <p>Log in to continue learning.</p>
 
         <label>Email</label>
         <input name="email" type="email" required>
@@ -20,7 +18,7 @@
         <label>Password</label>
         <input name="password" type="password" required>
 
-        <button type="submit">LOG IN</button>
+        <button type="submit">Log in</button>
 
         <p>
             Don't have an account?
@@ -29,7 +27,7 @@
         </p>
 
     </form>
-</div>
+</main>
 
 </body>
 </html>

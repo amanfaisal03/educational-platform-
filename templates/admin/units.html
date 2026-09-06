@@ -3,18 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>Units</title>
+    <link rel="stylesheet" href="/static/styles.css">
 </head>
-<style>
-        .card{
-            background: white;
-            padding: 15px;
-            width: 240px;
-            border: 1px solid #e0e0e0;
-            border-radius: 6px;
-        }
-</style>
 <body>
-
+<main>
 <h1>Units for {{ course.name }}</h1>
 <h3> you can add unit  </h3>
 <form action="/api/v1/admin/units" method="post" class="card">
@@ -42,6 +34,6 @@
 <div class="card">
     <a href="/api/v1/auth/signout" > SIGN OUT</a>
 </div>
-
+</main>
 </body>
 </html>

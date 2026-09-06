@@ -2,29 +2,11 @@
 <html>
 <head>
     <title>Lessons</title>
-
-    <style>
-
-        .lesson{
-            background: white;
-            padding: 16px;
-            margin-bottom: 12px;
-            border: 1px solid #e6e6e6;
-        }
-
-        .links a{
-            display: inline-block;
-            margin-right: 8px;
-            color: white;
-            background: black;
-            padding: 6px 10px;
-        }
-
-
-    </style>
+    <link rel="stylesheet" href="/static/styles.css">
 </head>
-      <h1> lessons by unite </h1>
 <body>
+<main>
+<h1>Lessons</h1>
 {% for lesson in unite.lessons %}
 
     <div class="lesson">
@@ -32,11 +14,11 @@
         <h3>{{ lesson.title }}</h3>
 
         <div class="links">
-            <a href="/api/v1/student/lessons/{{ lesson.id }}/video" target="_blank">
+            <a class="button" href="/api/v1/student/lessons/{{ lesson.id }}/video" target="_blank">
                 Video
             </a>
 
-            <a href="/api/v1/student/lessons/{{ lesson.id }}/pdf" target="_blank">
+            <a class="button" href="/api/v1/student/lessons/{{ lesson.id }}/pdf" target="_blank">
                 PDF
             </a>
         </div>
@@ -44,6 +26,6 @@
     </div>
 
 {% endfor %}
-
+</main>
 </body>
 </html>
