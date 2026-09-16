@@ -30,7 +30,7 @@ services:
     environment:
       database_url: postgresql+psycopg2://platform_user:platform_password@postgres:5432/platformdb
       SECURE_COOKIES: "false"
-    command: sh -c "alembic upgrade head && uvicorn api.main:app --host 0.0.0.0 --port 8000"
+    command: sh -c "alembic upgrade head && uvicorn api.main:modules --host 0.0.0.0 --port 8000"
     depends_on:
       postgres:
         condition: service_healthy

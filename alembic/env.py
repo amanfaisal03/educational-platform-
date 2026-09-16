@@ -4,15 +4,15 @@ from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
 from alembic import context
-from app.db.base import Base
-from app.models import Course, Lesson, Material, Unit, User, UserCourse
-from app.core.Config import settings
+from modules.base import Base
+from modules.models import Course, Lesson, Material, Unit, User, UserCourse
+from modules.Config import settings
 
 
 target_metadata = Base.metadata
-from app.models.user import User
-from app.models.course import Course, Unit, Lesson, Material
-from app.models.user_course import UserCourse
+from modules.models.user import User
+from modules.models.course import Course, Unit, Lesson, Material
+from modules.models.user_course import UserCourse
 
 
 
