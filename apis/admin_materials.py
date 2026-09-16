@@ -3,12 +3,12 @@ from fastapi.responses import RedirectResponse, Response
 
 from modules.auth.authorization import require_admin
 from modules.auth.services import get_material_service
-from modules.services import (
+from jose.exceptions  import (
     EmptyMaterialError,
     InvalidMaterialTypeError,
     LessonNotFoundError,
 )
-from modules.services import MaterialService
+from modules.courses.material.material_service import MaterialService
 
 
 admin_materials_router = APIRouter(

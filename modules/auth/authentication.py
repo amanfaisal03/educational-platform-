@@ -4,7 +4,7 @@ from urllib.parse import unquote
 from fastapi import Cookie, Depends, Header, HTTPException, status
 from modules.auth.services import get_auth_service, get_token_service
 from modules.users.student.models import User
-from modules.auth.Services import AuthService
+from modules.auth.service  import AuthService
 from jose.exceptions import ExpiredTokenError ,InvalidTokenError ,MissingTokenSubjectError
 from modules.auth.token_service import TokenService
 

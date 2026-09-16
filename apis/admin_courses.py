@@ -5,8 +5,8 @@ from fastapi.templating import Jinja2Templates
 
 from modules.auth.authorization import require_admin
 from modules.auth.services import get_course_service
-from modules.courses.course_service import CourseService
-from modules.services import (
+from modules.courses.course.service import  CourseService
+from jose.exceptions  import (
     CourseAlreadyExistsError,
     CourseNotFoundError,
     EmptyTitleError,

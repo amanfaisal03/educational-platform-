@@ -6,10 +6,10 @@ from starlette.responses import RedirectResponse
 
 from modules.auth.authorization import require_student
 from modules.auth.services import get_course_service, get_enrollment_service
-from modules.models.user import User
-from modules.courses.course_service import CourseService
-from modules.user_course.enrollment_service import EnrollmentService
-from modules.services import CourseNotFoundError, UnitNotFoundError
+from modules.users.student.models import User
+from modules.courses.course.service import CourseService
+from modules.users.user_course.enrollment_service import EnrollmentService
+from jose.exceptions import CourseNotFoundError, UnitNotFoundError
 
 
 student_courses_router = APIRouter(

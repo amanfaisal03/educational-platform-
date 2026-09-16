@@ -3,9 +3,9 @@ from fastapi.responses import Response
 
 from modules.auth.authorization import require_student
 from modules.auth.services import get_material_service
-from modules.models.user import User
-from modules.services import CourseAccessDeniedError, LessonNotFoundError
-from modules.services import MaterialService
+from modules.users.student.models import User
+from jose.exceptions import CourseAccessDeniedError, LessonNotFoundError
+from modules.courses.material.material_service import MaterialService
 
 
 materials_router = APIRouter(

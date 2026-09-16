@@ -1,17 +1,15 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
-from api.routers.admin import admin_router
-from api.routers.auth import auth_router
-from api.routers.courses import courses_router
-
+from apis.materials import admin_router
+from apis.auth import auth_router
 
 from fastapi import APIRouter
 
-from api.routers.admin_courses import admin_courses_router
+from apis.admin_courses import admin_courses_router
 from apis.admin_materials import admin_materials_router
-from api.routers.materials import materials_router
-from api.routers.student_courses import student_courses_router
+from apis.courses import materials_router
+from apis.user_course import student_courses_router
 
 courses_router = APIRouter()
 courses_router.include_router(admin_courses_router)

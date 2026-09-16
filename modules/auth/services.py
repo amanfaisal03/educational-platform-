@@ -6,7 +6,7 @@ from modules.courses.course.course_repository import CourseRepository
 from modules.courses.material.material_repository import MaterialRepository
 from modules.users.user_course.user_courses_repository import UserCourseRepository
 from modules.users.repository import UserRepository
-from modules.auth.Services import AuthService
+from modules.auth.service import AuthService
 from modules.courses.course.service import CourseService
 from modules.deletion_policies import SoftDeleteStudentDeletionPolicy
 from modules.users.user_course.enrollment_service import EnrollmentService

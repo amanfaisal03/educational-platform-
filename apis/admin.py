@@ -3,7 +3,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
 from modules.auth.authorization import require_admin
-from modules.exceptions import StudentNotFoundError
+from jose.exceptions  import StudentNotFoundError
 from modules.users.service import StudentAdminService, get_student_admin_service
 
 router = APIRouter(
