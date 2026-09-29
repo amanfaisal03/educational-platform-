@@ -5,7 +5,7 @@ from modules.auth.services import get_auth_service, get_token_service
 from modules.Config import settings
 from modules.auth.schemas import LoginRequest, StudentRegistrationRequest
 from modules.auth.service  import AuthService
-from jose.exceptions  import UserAlreadyExistsError, InvalidCredentialsError
+from modules.exceptions import InvalidCredentialsError, UserAlreadyExistsError
 from modules.auth.token_service import TokenService
 
 auth_router = APIRouter(

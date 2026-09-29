@@ -1,6 +1,6 @@
 from modules.courses.course.course_repository import CourseRepository
 from modules.courses.unit.unit_repository import UnitRepository
-from jose.exceptions import EmptyTitleError ,UnitNotFoundError
+from modules.exceptions import EmptyTitleError, UnitNotFoundError
 from modules.courses.unit.models import Unit
 
 class UnitService:

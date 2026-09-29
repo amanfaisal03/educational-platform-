@@ -10,7 +10,13 @@ from modules.auth.schemas import LoginRequest, StudentRegistrationRequest, Token
 from modules.Config import settings
 from modules.auth.password_hasher import hash_password, verify_password
 from modules.database import get_db_session
-from jose.exceptions import ExpiredTokenError,InvalidCredentialsError,InvalidTokenError,MissingTokenSubjectError,UserAlreadyExistsError
+from modules.exceptions import (
+    ExpiredTokenError,
+    InvalidCredentialsError,
+    InvalidTokenError,
+    MissingTokenSubjectError,
+    UserAlreadyExistsError,
+)
 from modules.users.student.models import User
 
 

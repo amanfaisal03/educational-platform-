@@ -4,7 +4,7 @@ from fastapi import Depends
 from sqlalchemy.orm import Session
 
 from modules.database import get_db_session
-from jose.exceptions import StudentNotFoundError
+from modules.exceptions import StudentNotFoundError
 from modules.users.student.models import User
 from modules.users.repository import UserRepository
 

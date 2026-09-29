@@ -11,8 +11,10 @@ class Settings(BaseSettings):
     admin_name: str
     admin_password: str
     admin_email: str
+    debug_toolbar_enabled: bool = False
+    debug_toolbar_allowed_hosts: list[str] = ["127.0.0.1", "localhost"]
 
-    _project_root = Path(__file__).resolve().parents[2]
+    _project_root = Path(__file__).resolve().parents[1]
     _env_file = _project_root / ".env"
     model_config = SettingsConfigDict(
         env_file=str(_env_file),

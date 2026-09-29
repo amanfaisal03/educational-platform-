@@ -1,7 +1,6 @@
 services:
   postgres:
     image: pgvector/pgvector:pg16
-    container_name: postgres
 
     environment:
       POSTGRES_USER: platform_user
@@ -9,7 +8,7 @@ services:
       POSTGRES_DB: platformdb
 
     ports:
-      - "5433:5432"
+      - "5434:5432"
 
     volumes:
       - educational_platform_postgres_data:/var/lib/postgresql/data
@@ -24,20 +23,18 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: backend
     env_file:
       - .env
     environment:
       database_url: postgresql+psycopg2://platform_user:platform_password@postgres:5432/platformdb
       SECURE_COOKIES: "false"
-    command: sh -c "alembic upgrade head && uvicorn api.main:modules --host 0.0.0.0 --port 8000"
+    command: sh -c "alembic upgrade head && uvicorn apis.main:app --host 0.0.0.0 --port 8000"
     depends_on:
       postgres:
         condition: service_healthy
 
   frontend:
     image: nginx:1.27-alpine
-    container_name: frontend
     ports:
       - "8080:80"
     volumes:

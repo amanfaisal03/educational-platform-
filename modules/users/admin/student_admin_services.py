@@ -1,7 +1,7 @@
 from modules.users.student.models import User
 from modules.users.repository import UserRepository
 from modules.deletion_policies import StudentDeletionPolicy
-from jose.exceptions import StudentNotFoundError
+from modules.exceptions import StudentNotFoundError
 
 
 class StudentAdminService:

@@ -3,7 +3,12 @@ from typing import Protocol
 from modules.courses.material.models import Material
 from modules.courses.material.material_repository import MaterialRepository
 from modules.users.user_course.user_courses_repository import UserCourseRepository
-from jose.exceptions import CourseAccessDeniedError,EmptyMaterialError,InvalidMaterialTypeError,LessonNotFoundError
+from modules.exceptions import (
+    CourseAccessDeniedError,
+    EmptyMaterialError,
+    InvalidMaterialTypeError,
+    LessonNotFoundError,
+)
 
 
 

@@ -5,7 +5,7 @@ from jose.exceptions import ExpiredSignatureError
 
 from modules.Config import settings
 from modules.auth.schemas import TokenData
-from jose.exceptions import ExpiredTokenError,InvalidTokenError,MissingTokenSubjectError
+from modules.exceptions import ExpiredTokenError, InvalidTokenError, MissingTokenSubjectError
 
 
 class TokenService:

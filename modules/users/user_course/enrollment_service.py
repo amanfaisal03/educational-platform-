@@ -2,7 +2,7 @@ from typing import Protocol
 
 from modules.courses.course.models import Course
 from modules.users.user_course.models import UserCourse
-from jose.exceptions import CourseNotFoundError
+from modules.exceptions import CourseNotFoundError
 
 
 

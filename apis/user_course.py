@@ -9,7 +9,7 @@ from modules.auth.services import get_course_service, get_enrollment_service
 from modules.users.student.models import User
 from modules.courses.course.service import CourseService
 from modules.users.user_course.enrollment_service import EnrollmentService
-from jose.exceptions import CourseNotFoundError, UnitNotFoundError
+from modules.exceptions import CourseNotFoundError, UnitNotFoundError
 
 
 student_courses_router = APIRouter(

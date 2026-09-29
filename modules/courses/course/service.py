@@ -1,6 +1,6 @@
 from modules.courses.course.course_repository import CourseRepository
 from modules.courses.course.models import Course
-from jose.exceptions import CourseNotFoundError ,EmptyTitleError,CourseAlreadyExistsError
+from modules.exceptions import CourseAlreadyExistsError, CourseNotFoundError, EmptyTitleError
 
 class CourseService:
     def __init__(self, courses: CourseRepository):

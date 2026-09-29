@@ -1,7 +1,7 @@
 from modules.courses.lesson.models import Lesson
 from modules.courses.lesson.lessons_repository import LessonRepository
 from modules.courses.unit.unit_repository import UnitRepository
-from jose.exceptions import EmptyTitleError ,LessonAlreadyExistsError
+from modules.exceptions import EmptyTitleError, LessonAlreadyExistsError
 
 
 

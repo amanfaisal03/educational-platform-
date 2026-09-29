@@ -3,7 +3,7 @@ from fastapi.responses import RedirectResponse, Response
 
 from modules.auth.authorization import require_admin
 from modules.auth.services import get_material_service
-from jose.exceptions  import (
+from modules.exceptions import (
     EmptyMaterialError,
     InvalidMaterialTypeError,
     LessonNotFoundError,

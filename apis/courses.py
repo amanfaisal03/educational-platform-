@@ -4,7 +4,7 @@ from fastapi.responses import Response
 from modules.auth.authorization import require_student
 from modules.auth.services import get_material_service
 from modules.users.student.models import User
-from jose.exceptions import CourseAccessDeniedError, LessonNotFoundError
+from modules.exceptions import CourseAccessDeniedError, LessonNotFoundError
 from modules.courses.material.material_service import MaterialService
 
 
