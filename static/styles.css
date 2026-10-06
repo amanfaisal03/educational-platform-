@@ -168,7 +168,66 @@ button:hover, .button:hover { background: var(--primary-dark); text-decoration: 
 .lesson-card .links { margin: 0; }
 .hidden { display: none !important; }
 
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin: 28px 0 8px;
+    padding: 20px 0 0;
+    border-top: 1px solid var(--border);
+}
+.pagination-summary { color: var(--muted); font-size: 13px; white-space: nowrap; }
+.pagination-summary strong { color: var(--ink); font-weight: 600; }
+.pagination-controls { display: flex; align-items: center; gap: 6px; max-width: 100%; }
+.pagination-pages {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    gap: 4px;
+    overflow-x: auto;
+}
+.pagination-number, .pagination-arrow, .pagination-ellipsis {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    min-width: 36px;
+    height: 36px;
+    padding: 0 8px;
+    color: #475467;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+}
+.pagination-arrow {
+    width: 36px;
+    border-radius: 8px;
+    border: 1px solid #d0d5dd;
+    background: #fff;
+    font-size: 24px;
+    line-height: 1;
+}
+.pagination-number { border: 1px solid transparent; border-radius: 8px; }
+.pagination-ellipsis { min-width: 24px; padding: 0 4px; color: #98a2b3; }
+.pagination-number.is-current {
+    color: #fff;
+    background: var(--primary);
+    border-color: var(--primary);
+}
+.pagination a:hover { color: #185bcc; background: #e0e8f8; text-decoration: none; }
+.pagination a:focus-visible { outline: 2px solid #2276ff; outline-offset: -2px; }
+.pagination-arrow[aria-disabled="true"] { color: #c0c6d0; background: #f9fafb; border-color: var(--border); }
+
 @media (max-width: 600px) {
+    .pagination { justify-content: center; }
+    .pagination-summary { width: 100%; text-align: center; }
+    .pagination-controls { gap: 3px; }
+    .pagination-pages { gap: 2px; }
+    .pagination-number, .pagination-arrow { min-width: 28px; height: 34px; padding: 0 5px; }
+    .pagination-arrow { width: 28px; }
+    .pagination-ellipsis { min-width: 18px; padding: 0 2px; }
     main, .page { padding: 28px 16px 48px; }
     .topbar { align-items: flex-start; flex-direction: column; padding: 16px; }
     .nav-links { gap: 12px; }

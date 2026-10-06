@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta charset="UTF-8">
     <title>Units</title>
-    <link rel="stylesheet" href="/static/styles.css">
+    <link rel="stylesheet" href="/static/styles.css?v=20261006-pagination-2">
 </head>
 <body>
 <nav class="topbar">
@@ -27,13 +28,15 @@
 
 <h2>Existing Units</h2>
 
-{% for unit in course.units %}
+{% for unit in units %}
 <div  class="card">
     <h3>{{ unit.title }}</h3>
 
     <a href="/api/v1/admin/units/{{ unit.id }}/lessons">Lessons for this unit</a>
 </div>
 {% endfor %}
+
+{% include "partials/pagination.html" %}
 
 <div class="card">
  <a href="/api/v1/admin/courses">BACK TO COURSE</a>

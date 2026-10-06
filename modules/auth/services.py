@@ -3,7 +3,11 @@ from sqlalchemy.orm import Session
 
 from modules.database import get_db_session
 from modules.courses.course.course_repository import CourseRepository
+from modules.courses.lesson.lessons_repository import LessonRepository
+from modules.courses.lesson.service import LessonService
 from modules.courses.material.material_repository import MaterialRepository
+from modules.courses.unit.service import UnitService
+from modules.courses.unit.unit_repository import UnitRepository
 from modules.users.user_course.user_courses_repository import UserCourseRepository
 from modules.users.repository import UserRepository
 from modules.auth.service import AuthService
@@ -47,6 +51,24 @@ def get_course_service(
     db: Session = Depends(get_db_session),
 ):
     return CourseService(CourseRepository(db))
+
+
+def get_unit_service(
+    db: Session = Depends(get_db_session),
+):
+    return UnitService(
+        unit=UnitRepository(db),
+        course=CourseRepository(db),
+    )
+
+
+def get_lesson_service(
+    db: Session = Depends(get_db_session),
+):
+    return LessonService(
+        lesson=LessonRepository(db),
+        unit=UnitRepository(db),
+    )
 
 
 def get_enrollment_service(

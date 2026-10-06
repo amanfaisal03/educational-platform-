@@ -1,11 +1,16 @@
-
-from fastapi import APIRouter, Depends, HTTPException, Response, status,Form,  Request
+from fastapi import APIRouter, Depends, HTTPException, Response, status, Form, Request, Query
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
 from modules.auth.authorization import require_admin
-from modules.auth.services import get_course_service
+from modules.auth.services import (
+    get_course_service,
+    get_lesson_service,
+    get_unit_service,
+)
 from modules.courses.course.service import  CourseService
+from modules.courses.lesson.service import LessonService
+from modules.courses.unit.service import UnitService
 from modules.exceptions import (
     CourseAlreadyExistsError,
     CourseNotFoundError,
@@ -26,12 +31,20 @@ templates = Jinja2Templates(directory="templates")
 @admin_courses_router.get("/courses", response_class=HTMLResponse)
 def display_courses(
     request: Request,
+    page: int = Query(1, ge=1),
     service: CourseService = Depends(get_course_service),
 ):
+    per_page = 6
+    courses, page, total_pages = service.list_courses_paginated(page, per_page)
+
     return templates.TemplateResponse(
         request=request,
         name="admin/courses.html",
-        context={"courses": service.list_courses()},
+        context={
+            "courses": courses,
+            "page": page,
+            "total_pages": total_pages,
+        },
     )
 
 
@@ -67,7 +80,7 @@ def delete_course(
 def create_course_unit(
     course_id: int = Form(...),
     title: str = Form(...),
-    service: CourseService = Depends(get_course_service),
+    service: UnitService = Depends(get_unit_service),
 ):
     try:
         service.create_unit(course_id, title)
@@ -84,13 +97,23 @@ def create_course_unit(
 def display_units(
     request: Request,
     course_id: int,
-    service: CourseService = Depends(get_course_service),
+    service: UnitService = Depends(get_unit_service),
+    page: int = Query(1, ge=1),
+    course: CourseService = Depends(get_course_service),
+
 ):
     try:
-        course = service.get_course(course_id)
-        units = service.get_units_by_course_id(course_id)
+        course = course.get_course(course_id)
+        per_page = 6
+        units, page, total_pages = service.get_units_by_course_id_paginated(
+            course_id,
+            page,
+            per_page,
+        )
     except UnitNotFoundError:
         raise HTTPException(status_code=404, detail="Unit not found")
+    except CourseNotFoundError:
+        raise HTTPException(status_code=404, detail="Course not found")
 
     return templates.TemplateResponse(
         request=request,
@@ -98,6 +121,8 @@ def display_units(
         context={
             "course": course,
             "units": units,
+            "page": page,
+            "total_pages": total_pages,
         },
     )
 
@@ -106,7 +131,7 @@ def display_units(
 def create_unit_lesson(
     unit_id: int = Form(...),
     title: str = Form(...),
-    service: CourseService = Depends(get_course_service),
+    service: LessonService = Depends(get_lesson_service),
 ):
     try:
         service.create_lesson(unit_id, title)
@@ -126,15 +151,29 @@ def create_unit_lesson(
 def display_admin_unit_lessons(
     request: Request,
     unit_id: int,
-    service: CourseService = Depends(get_course_service),
+    service: LessonService = Depends(get_lesson_service),
+    page: int = Query(1, ge=1),
 ):
+
+    per_page = 6
     try:
         unit = service.get_unit(unit_id)
+        lessons, page, total_pages = service.get_lessons_by_unit_id_paginated(
+            unit_id,
+            page,
+            per_page,
+        )
     except UnitNotFoundError:
         raise HTTPException(status_code=404, detail="Unit not found")
 
     return templates.TemplateResponse(
         request=request,
         name="admin/lessons.html",
-        context={"unit": unit},
+        context={
+            "unit": unit,
+            "lessons": lessons,
+            "page": page,
+            "total_pages": total_pages,
+            "per_page": per_page,
+        },
     )

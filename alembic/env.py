@@ -5,14 +5,13 @@ from sqlalchemy import pool
 
 from alembic import context
 from modules.base import Base
-from modules.models import Course, Lesson, Material, Unit, User, UserCourse
 from modules.Config import settings
-
-
-target_metadata = Base.metadata
-from modules.models.user import User
-from modules.models.course import Course, Unit, Lesson, Material
-from modules.models.user_course import UserCourse
+from modules.courses.course.models import Course
+from modules.courses.lesson.models import Lesson
+from modules.courses.material.models import Material
+from modules.courses.unit.models import Unit
+from modules.users.student.models import User
+from modules.users.user_course.models import UserCourse
 
 
 

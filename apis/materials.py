@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Form, HTTPException, Request, Response, status
+from fastapi import APIRouter, Depends, Form, HTTPException, Query, Request, Response, status
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from modules.auth.authorization import require_admin
@@ -11,13 +11,23 @@ templates = Jinja2Templates(directory="templates")
 
 @admin_router.get("", response_class=HTMLResponse)
 @admin_router.get("/", response_class=HTMLResponse, include_in_schema=False)
-def admin_page(request: Request, service:StudentAdminService = Depends(get_student_admin_service)):
-    students=service.list_students()
+def admin_page(
+    request: Request,
+    page: int = Query(1, ge=1),
+    per_page: int = Query(10, ge=1, le=100),
+    service: StudentAdminService = Depends(get_student_admin_service),
+):
+    students, page, total_pages = service.list_students_paginated(page, per_page)
 
     return templates.TemplateResponse(
         request=request,
         name="admin/admin_core_page.html",
-        context={"students": students},
+        context={
+            "students": students,
+            "page": page,
+            "total_pages": total_pages,
+            "per_page": per_page,
+        },
     )
 
 @admin_router.delete(

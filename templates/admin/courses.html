@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta charset="UTF-8">
     <title>Course Dashboard</title>
-    <link rel="stylesheet" href="/static/styles.css">
+    <link rel="stylesheet" href="/static/styles.css?v=20261006-pagination-2">
 </head>
 <body>
 <nav class="topbar">
@@ -54,6 +55,8 @@
 
 </div>
 {% endfor %}
+
+{% include "partials/pagination.html" %}
 
 
 <div>

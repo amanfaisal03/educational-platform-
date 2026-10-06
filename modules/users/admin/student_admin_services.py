@@ -25,6 +25,9 @@ class StudentAdminService:
             raise StudentNotFoundError()
         self.deletion_policy.delete(student)
 
+    def student_count(self):
+        return self.users.count_students()
+
 
 
 __all__ = ["StudentAdminService"]

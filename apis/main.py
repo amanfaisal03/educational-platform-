@@ -43,7 +43,6 @@ def configure_debug_toolbar(app: FastAPI) -> None:
             "debug_toolbar.panels.routes.RoutesPanel",
             "debug_toolbar.panels.logging.LoggingPanel",
             "debug_toolbar.panels.redirects.RedirectsPanel",
-            "debug_toolbar.panels.sqlalchemy.SQLAlchemyPanel",
         ],
     )
 

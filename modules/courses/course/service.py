@@ -1,6 +1,8 @@
+
 from modules.courses.course.course_repository import CourseRepository
 from modules.courses.course.models import Course
 from modules.exceptions import CourseAlreadyExistsError, CourseNotFoundError, EmptyTitleError
+from modules.pagination import pagination
 
 class CourseService:
     def __init__(self, courses: CourseRepository):
@@ -8,6 +10,17 @@ class CourseService:
 
     def list_courses(self) -> list[Course]:
         return self.courses.list_courses()
+
+    def list_courses_paginated(self, page: int, per_page: int) -> tuple[list[Course], int, int]:
+        total = self.courses.count_courses()
+        page, total_pages, offset =pagination.calculate_pagination(
+            total, page, per_page
+        )
+        courses = self.courses.list_courses(
+            limit=per_page,
+            offset=offset,
+        )
+        return courses, page, total_pages
 
     def get_course(self, course_id: int) -> Course:
         course = self.courses.get_course_by_id(course_id)
@@ -28,4 +41,4 @@ class CourseService:
         self.courses.deactivate_course(course)
 
 
-__all__=["CourseService"]
+__all__ = ["CourseService"]

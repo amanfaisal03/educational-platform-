@@ -7,7 +7,7 @@ from modules.database import get_db_session
 from modules.exceptions import StudentNotFoundError
 from modules.users.student.models import User
 from modules.users.repository import UserRepository
-
+from modules.pagination import  pagination
 
 class StudentDeletionPolicy(Protocol):
     def delete(self, student: User) -> None:
@@ -44,6 +44,18 @@ class StudentAdminService:
     def list_students(self) -> list[User]:
         return self.users.list_students()
 
+    def list_students_paginated(
+        self,
+        page: int,
+        per_page: int,
+    ) -> tuple[list[User], int, int]:
+        total = self.users.count_students()
+        page, total_pages, offset = pagination.calculate_pagination(
+            total, page, per_page
+        )
+        students = self.users.list_students(limit=per_page, offset=offset)
+        return students, page, total_pages
+
     def get_student(self, student_id: int) -> User | None:
         return self.users.get_student_by_id(student_id)
 
@@ -52,7 +64,8 @@ class StudentAdminService:
         if student is None:
             raise StudentNotFoundError()
         self.deletion_policy.delete(student)
-
+    def count_students(self) -> int:
+        return self.users.count_students()
 
 def get_student_admin_service(
     db: Session = Depends(get_db_session),

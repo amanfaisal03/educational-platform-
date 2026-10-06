@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="/static/styles.css">
+    <link rel="stylesheet" href="/static/styles.css?v=20261006-pagination-2">
 </head>
 <body>
 <nav class="topbar">
@@ -26,6 +27,8 @@
 {% for student in students %}
     <p>{{ student.id }} - {{ student.name }}</p>
 {% endfor %}
+
+{% include "partials/pagination.html" %}
 
 </div>
 

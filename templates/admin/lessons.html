@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta charset="UTF-8">
     <title>Lessons</title>
-    <link rel="stylesheet" href="/static/styles.css">
+    <link rel="stylesheet" href="/static/styles.css?v=20261006-pagination-2">
 </head>
 <body>
 <nav class="topbar">
@@ -29,7 +30,7 @@
         </form>
     </div>
 
-    {% for lesson in unit.lessons %}
+    {% for lesson in lessons %}
 
     <div class="card">
         <div class="lesson-header">
@@ -68,6 +69,8 @@
     </div>
 
     {% endfor %}
+
+    {% include "partials/pagination.html" %}
 </main>
 </body>
 </html>

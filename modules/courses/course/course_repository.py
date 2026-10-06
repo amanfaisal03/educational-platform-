@@ -7,8 +7,18 @@ class CourseRepository:
     def __init__(self, db: Session):
         self.db = db
 
-    def list_courses(self) -> list[Course]:
-        return self.db.query(Course).filter(Course.is_active.is_(True)).all()
+    def list_courses(self, limit: int | None = None, offset: int = 0) -> list[Course]:
+        query = (
+            self.db.query(Course)
+            .filter(Course.is_active.is_(True))
+            .order_by(Course.id)
+        )
+        if limit is not None:
+            query = query.offset(offset).limit(limit)
+        return query.all()
+
+    def count_courses(self) -> int:
+        return self.db.query(Course).filter(Course.is_active.is_(True)).count()
 
     def get_course_by_id(self, course_id: int) -> Course | None:
         return self.db.query(Course).filter(Course.id == course_id ,Course.is_active.is_(True)).first()

@@ -24,9 +24,22 @@ class UserRepository:
             .first()
         )
 
-    def list_students(self) -> list[User]:
-        return (self.db.query(User).filter(User.role == "student"
-                                           ,User.is_deleted.is_(False)).all())
+    def list_students(self, limit: int | None = None, offset: int = 0) -> list[User]:
+        query = (
+            self.db.query(User)
+            .filter(User.role == "student", User.is_deleted.is_(False))
+            .order_by(User.id)
+        )
+        if limit is not None:
+            query = query.offset(offset).limit(limit)
+        return query.all()
+
+    def count_students(self) -> int:
+        return (
+            self.db.query(User)
+            .filter(User.role == "student", User.is_deleted.is_(False))
+            .count()
+        )
 
     def add(
         self,
@@ -51,8 +64,6 @@ class UserRepository:
 
     def soft_delete(self, user: User) -> None:
         user.is_deleted = True
-
-
 
 
 

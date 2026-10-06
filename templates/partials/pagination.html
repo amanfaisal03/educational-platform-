@@ -1,0 +1,35 @@
+{% if total_pages > 1 %}
+<nav class="pagination" aria-label="Pagination">
+    <span class="pagination-summary">Page <strong>{{ page }}</strong> of <strong>{{ total_pages }}</strong></span>
+    <div class="pagination-controls">
+    {% if page > 1 %}
+        <a class="pagination-arrow" href="{{ request.url.path }}?{{ request.url.include_query_params(page=page - 1).query }}" aria-label="Previous page">&#8249;</a>
+    {% else %}
+        <span class="pagination-arrow" aria-label="Previous page" aria-disabled="true">&#8249;</span>
+    {% endif %}
+
+    <div class="pagination-pages">
+        {% set previous = namespace(number=0) %}
+        {% for number in range(1, total_pages + 1) %}
+            {% if total_pages <= 7 or number == 1 or number == total_pages or (page <= 4 and number <= 5) or (page >= total_pages - 3 and number >= total_pages - 4) or (number >= page - 1 and number <= page + 1) %}
+                {% if previous.number and number > previous.number + 1 %}
+                    <span class="pagination-ellipsis" aria-hidden="true">&hellip;</span>
+                {% endif %}
+                {% if number == page %}
+                    <span class="pagination-number is-current" aria-current="page" aria-label="Page {{ number }}">{{ number }}</span>
+                {% else %}
+                    <a class="pagination-number" href="{{ request.url.path }}?{{ request.url.include_query_params(page=number).query }}" aria-label="Page {{ number }}">{{ number }}</a>
+                {% endif %}
+                {% set previous.number = number %}
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    {% if page < total_pages %}
+        <a class="pagination-arrow" href="{{ request.url.path }}?{{ request.url.include_query_params(page=page + 1).query }}" aria-label="Next page">&#8250;</a>
+    {% else %}
+        <span class="pagination-arrow" aria-label="Next page" aria-disabled="true">&#8250;</span>
+    {% endif %}
+    </div>
+</nav>
+{% endif %}
