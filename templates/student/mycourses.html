@@ -1,72 +1,72 @@
 <!DOCTYPE html>
-<html>
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>My Courses</title>
+    <title>دوراتي | درب</title>
     <link rel="stylesheet" href="/static/styles.css">
+    <link rel="stylesheet" href="/static/student-dashboard.css?v=2">
 </head>
+<body class="student-dashboard my-learning">
+    <header class="dashboard-header">
+        <a class="dashboard-brand" href="/api/v1/student/mycourses" aria-label="الرئيسية">
+            <span class="dashboard-brand-icon" aria-hidden="true">✦</span>
+            <span>درب</span>
+        </a>
+        <nav class="dashboard-nav" aria-label="التنقل الرئيسي">
+            <a href="/api/v1/auth/signout">تسجيل الخروج</a>
+        </nav>
+    </header>
 
-<body>
-<nav class="topbar">
-    <a class="brand" href="/api/v1/student/allcourses">LearnSpace</a>
-    <div class="nav-links">
-        <a href="/api/v1/student/allcourses">Explore courses</a>
-        <a href="/api/v1/auth/signout">Sign out</a>
-    </div>
-</nav>
-<main>
-<div class="hero">
-    <div>
-<!--        <span class="eyebrow">Your learning</span>-->
-        <h1>My learning space</h1>
-        <p>Open a course, choose a unit, and continue learning.</p>
-    </div>
-</div>
-
-<!--<div class="stats">-->
-<!--    <div class="stat"><strong>{{ enrolled_course_ids | length }}</strong><span>Joined courses</span></div>-->
-<!--    <div class="stat"><strong>{{ courses | length }}</strong><span>Courses to explore</span></div>-->
-<!--    <div class="stat"><strong>1</strong><span>Simple learning path</span></div>-->
-<!--</div>-->
-
-{% if courses %}
-    <div class="section-heading">
-        <div><h2>Your course library</h2><p>Choose a course to see its units.</p></div>
-    </div>
-    {% for course in courses %}
-        <div class="card">
-            <div class="course-row">
+    <main class="dashboard-layout">
+        <section class="dashboard-content" aria-labelledby="welcome-title">
+            <div class="dashboard-welcome">
                 <div>
-                    <span class="entity-label">Course</span>
-                    <h2>{{ course.name }}</h2>
-                    {% if course.id in enrolled_course_ids %}
-                        <span class="status status-success">Enrolled</span>
-                    {% else %}
-                        <span class="status">Free to join</span>
-                    {% endif %}
+                <span class="dashboard-eyebrow">مساحة تعلمك</span>
+                <h1 id="welcome-title">أهلاً بك</h1>
+                <p>كل يوم فرصة جديدة للتعلّم. اختر دورة وتابع رحلتك.</p>
                 </div>
-                {% if course.id in enrolled_course_ids %}
-                    <a class="button" href="/api/v1/student/courses/{{ course.id }}/units">
-                        Open course
-                    </a>
-                {% else %}
-                    <form class="inline-form" action="/api/v1/student/buy-course/{{ course.id }}" method="post">
-                        <button type="submit">Add course</button>
-                    </form>
-                {% endif %}
+                <span class="welcome-symbol" aria-hidden="true">✦</span>
             </div>
-        </div>
-    {% endfor %}
 
-{% else %}
-    <div class="card empty-state">
-        <h2>Your learning library is empty</h2>
-        <p>Choose a course to get started.</p>
-        <a class="button" href="/api/v1/student/allcourses">Explore courses</a>
-    </div>
+            <div class="dashboard-section-heading">
+                <div>
+                    <h2>دوراتي</h2>
+                    <p>تابع التعلّم من حيث توقفت.</p>
+                </div>
+                <a href="/api/v1/student/allcourses">الدورات المقترحة <span aria-hidden="true">←</span></a>
+            </div>
 
-{% endif %}
-</main>
+            <div class="dashboard-course-grid">
+                {% for course in courses if course.id in enrolled_course_ids %}
+                    <article class="dashboard-course-card">
+                        <div class="dashboard-course-art" aria-hidden="true">
+                            <svg viewBox="0 0 32 32" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.6">
+                                <path d="M16 8c-4-3-8-3-12-2v20c4-1 8-1 12 2 4-3 8-3 12-2V6c-4-1-8-1-12 2Zm0 0v20" />
+                                <path d="M8 11h4m-4 5h4m8-5h4m-4 5h4" stroke-linecap="round" />
+                            </svg>
+                        </div>
+                        <div class="dashboard-course-info">
+                            {% if course.grade and course.grade.name|lower != 'unassigned' %}
+                                <span class="dashboard-course-grade">{{ course.grade.name }}</span>
+                            {% endif %}
+                            <h3 dir="auto">{{ course.name }}</h3>
+                            <a class="dashboard-continue" href="/api/v1/student/courses/{{ course.id }}/units">
+                                متابعة التعلّم <span aria-hidden="true">←</span>
+                            </a>
+                        </div>
+                    </article>
+                {% else %}
+                    <div class="dashboard-empty">
+                        <span class="dashboard-empty-icon" aria-hidden="true">▤</span>
+                        <h3>لم تنضم إلى أي دورة بعد</h3>
+                        <p>استكشف الدورات واختر ما يناسبك لتبدأ التعلّم.</p>
+                        <a class="dashboard-button" href="/api/v1/student/allcourses">استكشف الدورات</a>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+
+    </main>
 </body>
 </html>

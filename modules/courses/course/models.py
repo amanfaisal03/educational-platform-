@@ -1,7 +1,8 @@
-from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
 
 from modules.base import Base
+from modules.gread.models import Grade
 
 
 class Course(Base):
@@ -21,3 +22,5 @@ class Course(Base):
         back_populates="course",
         cascade="all, delete-orphan",
     )
+    grade_id = Column(Integer, ForeignKey("grades.id"), nullable=False)
+    grade = relationship("Grade", back_populates="courses")

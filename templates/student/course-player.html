@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ learning_course.name }} | درب</title>
+    <link rel="stylesheet" href="/static/course-player.css">
+    <script src="/static/course-player.js" defer></script>
+</head>
+<body>
+    <header class="course-header">
+        <div class="course-heading">
+            <a href="/api/v1/student/mycourses">← دوراتي</a>
+            <h1>{{ learning_course.name }}</h1>
+        </div>
+        <div class="course-progress" title="التقدم خلال فتح هذه الصفحة فقط">
+            <progress id="course-progress" value="0" max="100" aria-label="تقدم الدروس في هذه الجلسة"></progress>
+            <span id="progress-label">0% مكتمل</span>
+        </div>
+    </header>
+    <div class="course-layout" data-initial-unit="{{ initial_unit_id | default('') }}">
+        <aside class="course-outline" aria-label="محتوى الدورة">
+            {% for course_unit in learning_course.units if course_unit.is_active %}
+                <section class="outline-unit">
+                    <span class="unit-label">الوحدة {{ loop.index }}</span>
+                    <h2>{{ course_unit.title }}</h2>
+                    {% for lesson in course_unit.lessons if lesson.is_active %}
+                        {% set materials = lesson.materials | selectattr('is_active') | list %}
+                        {% set videos = materials | selectattr('type', 'equalto', 'video') | list %}
+                        {% set pdfs = materials | selectattr('type', 'equalto', 'pdf') | list %}
+                        <button class="lesson-item" type="button"
+                                data-lesson-id="{{ lesson.id }}" data-unit-id="{{ course_unit.id }}"
+                                data-unit-title="{{ course_unit.title }}" data-title="{{ lesson.title }}"
+                                data-video="{{ '/api/v1/student/lessons/' ~ lesson.id ~ '/video' if videos else '' }}"
+                                data-pdf="{{ '/api/v1/student/lessons/' ~ lesson.id ~ '/pdf' if pdfs else '' }}"
+                                aria-pressed="false">
+                            <span class="lesson-icon" aria-hidden="true">{{ '▶' if videos else '▤' }}</span>
+                            <span class="lesson-name">{{ lesson.title }}</span>
+                            <span class="lesson-type">{{ 'فيديو + PDF' if videos and pdfs else ('فيديو' if videos else ('PDF' if pdfs else 'قريباً')) }}</span>
+                            <span class="lesson-complete" hidden aria-label="مكتمل">✓</span>
+                        </button>
+                    {% else %}
+                        <p class="outline-empty">لا توجد دروس في هذه الوحدة بعد.</p>
+                    {% endfor %}
+                </section>
+            {% else %}
+                <p class="outline-empty">سيُضاف محتوى الدورة قريباً.</p>
+            {% endfor %}
+        </aside>
+        <main class="lesson-workspace">
+            <div class="player-stage">
+                <video id="lesson-video" controls playsinline preload="metadata" hidden aria-label="فيديو الدرس"></video>
+                <button id="play-button" class="play-button" type="button" hidden aria-label="تشغيل الدرس">▶</button>
+                <div id="player-message" class="player-message" role="status">اختر درساً من قائمة المحتوى لبدء التعلّم.</div>
+                <iframe id="lesson-pdf" title="ملف الدرس PDF" hidden></iframe>
+            </div>
+            <div class="lesson-toolbar">
+                <div class="lesson-details" aria-live="polite">
+                    <p id="unit-title"></p>
+                    <h2 id="lesson-title">محتوى الدورة</h2>
+                    <div class="material-actions">
+                        <button id="show-video" type="button" hidden>الفيديو</button>
+                        <button id="show-pdf" type="button" hidden>ملف PDF</button>
+                        <a id="open-pdf" target="_blank" rel="noopener" hidden>فتح PDF في نافذة جديدة ↗</a>
+                    </div>
+                </div>
+                <div class="lesson-navigation">
+                    <button id="previous-lesson" class="secondary-button" type="button" disabled>السابق</button>
+                    <button id="complete-lesson" class="primary-button" type="button" disabled>إنهاء الدرس والتالي</button>
+                </div>
+            </div>
+            <p class="progress-note">يُحسب التقدم خلال فتح هذه الصفحة فقط.</p>
+            <noscript><p>يرجى تفعيل JavaScript لعرض الدروس والتنقل بينها.</p></noscript>
+        </main>
+    </div>
+</body>
+</html>

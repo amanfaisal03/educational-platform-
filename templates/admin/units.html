@@ -1,50 +1,43 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta charset="UTF-8">
-    <title>Units</title>
-    <link rel="stylesheet" href="/static/styles.css?v=20261006-pagination-2">
-</head>
-<body>
-<nav class="topbar">
-    <a class="brand" href="/api/v1/admin">LearnSpace Admin</a>
-    <div class="nav-links">
-        <a href="/api/v1/admin/courses">Courses</a>
-        <a href="/api/v1/auth/signout">Sign out</a>
+{% extends 'admin/base.html' %}
+{% set active_page = 'courses' %}
+{% block title %}الوحدات{% endblock %}
+{% block content %}
+    <nav class="admin-breadcrumb" aria-label="مسار التنقل">
+        <a href="/api/v1/admin/courses">كورساتي</a>
+        <span aria-hidden="true">/</span><span aria-current="page">الوحدات</span>
+    </nav>
+    <header class="admin-heading">
+        <div><h1><bdi>{{ course.name }}</bdi></h1><p>نظّم وحدات الكورس وأضف الدروس لكل وحدة.</p></div>
+        <a class="button" href="#new-unit">+ وحدة جديدة</a>
+    </header>
+
+    <div class="admin-course-grid">
+        {% for unit in units %}
+            <article class="admin-course">
+                <div class="admin-unit-icon" aria-hidden="true">▤</div>
+                <div class="admin-course-body">
+                    <span class="admin-grade">وحدة تعليمية</span>
+                    <h2 dir="auto">{{ unit.title }}</h2>
+                    <div class="admin-course-footer">
+                        <a href="/api/v1/admin/units/{{ unit.id }}/lessons">إدارة الدروس ←</a>
+                    </div>
+                </div>
+            </article>
+        {% else %}
+            <div class="admin-empty"><h2>لا توجد وحدات بعد</h2><p>أضف أول وحدة لتبدأ تنظيم دروس الكورس.</p></div>
+        {% endfor %}
     </div>
-</nav>
-<main>
-<span class="eyebrow">Course content</span>
-<h1>Units for {{ course.name }}</h1>
-<h3> you can add unit  </h3>
-<form action="/api/v1/admin/units" method="post" class="card">
+    <div dir="ltr" lang="en">{% include 'partials/pagination.html' %}</div>
 
-    <input type="hidden" name="course_id" value="{{ course.id }}">
-    <input type="text" name="title" placeholder="Unit title" required>
-    <button type="submit">Add Unit</button>
-</form>
-
-
-<h2>Existing Units</h2>
-
-{% for unit in units %}
-<div  class="card">
-    <h3>{{ unit.title }}</h3>
-
-    <a href="/api/v1/admin/units/{{ unit.id }}/lessons">Lessons for this unit</a>
-</div>
-{% endfor %}
-
-{% include "partials/pagination.html" %}
-
-<div class="card">
- <a href="/api/v1/admin/courses">BACK TO COURSE</a>
-</div>
-
-<div class="card">
-    <a href="/api/v1/auth/signout" > SIGN OUT</a>
-</div>
-</main>
-</body>
-</html>
+    <section id="new-unit" class="admin-panel" aria-labelledby="new-unit-title">
+        <h2 id="new-unit-title">إضافة وحدة جديدة</h2>
+        <form action="/api/v1/admin/units" method="post" class="admin-add-form">
+            <input type="hidden" name="course_id" value="{{ course.id }}">
+            <label for="unit-title">اسم الوحدة</label>
+            <div class="admin-form-row">
+                <input id="unit-title" type="text" name="title" placeholder="مثال: الوحدة الأولى" required>
+                <button type="submit">إضافة الوحدة</button>
+            </div>
+        </form>
+    </section>
+{% endblock %}

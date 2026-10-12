@@ -1,11 +1,12 @@
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from starlette import status
 from starlette.responses import RedirectResponse
 
 from modules.auth.authorization import require_student
-from modules.auth.services import get_course_service, get_enrollment_service
+from modules.auth.services import get_course_service, get_enrollment_service, get_unit_service
+from modules.courses.unit.service import UnitService
 from modules.users.student.models import User
 from modules.courses.course.service import CourseService
 from modules.users.user_course.enrollment_service import EnrollmentService
@@ -23,12 +24,14 @@ templates = Jinja2Templates(directory="templates")
 @student_courses_router.get("/allcourses", response_class=HTMLResponse)
 def display_all_courses(
     request: Request,
+    page: int = Query(1, ge=1),
     service: CourseService = Depends(get_course_service),
 ):
+    courses, page, total_pages = service.list_courses_paginated(page, per_page=6)
     return templates.TemplateResponse(
         request=request,
         name="student/allcourses.html",
-        context={"courses": service.list_courses()},
+        context={"courses": courses, "page": page, "total_pages": total_pages},
     )
 
 
@@ -73,7 +76,7 @@ def display_course_units(
 ):
     try:
         course = service.get_course(course_id)
-        units = service.get_units_by_course_id(course_id)
+        units = course.units
     except CourseNotFoundError:
         raise HTTPException(status_code=404, detail="Course not found")
     return templates.TemplateResponse(
@@ -86,15 +89,15 @@ def display_course_units(
 def display_unit_lessons(
     request: Request,
     unit_id: int,
-    service: CourseService = Depends(get_course_service),
+    service: UnitService = Depends(get_unit_service),
 ):
     try:
         unit = service.get_unit(unit_id)
-        lesson=service.get_lessons_by_unit_id(unit_id)
+        lessons = unit.lessons
     except UnitNotFoundError:
         raise HTTPException(status_code=404, detail="Unit not found")
     return templates.TemplateResponse(
         request=request,
         name="student/lessons.html",
-        context={"unit": unit, "lessons": lesson},
+        context={"unit": unit, "lessons": lessons},
     )

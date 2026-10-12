@@ -1,0 +1,12 @@
+.registration-page .login-content { max-width: 420px; }
+.registration-page .login-panel { padding-top: 70px; padding-bottom: 70px; }
+.registration-page .brand { margin-bottom: 22px; }
+.registration-page .intro { margin-bottom: 24px; }
+.registration-page .field { margin-bottom: 20px; }
+.registration-page .account-links { margin-top: 24px; }
+.registration-page .benefits-content { max-width: 440px; }
+.registration-page .benefits-content > p { margin-bottom: 0; }
+.registration-page h2 { margin-bottom: 22px; }
+@media (max-width: 680px) {
+    .registration-page .login-panel { padding: 36px 24px; }
+}

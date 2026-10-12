@@ -1,53 +1,34 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="/static/styles.css?v=20261006-pagination-2">
-</head>
-<body>
-<nav class="topbar">
-    <a class="brand" href="/api/v1/admin">LearnSpace Admin</a>
-    <div class="nav-links">
-        <a href="/api/v1/admin/courses">Courses</a>
-        <a href="/api/v1/auth/signout">Sign out</a>
-    </div>
-</nav>
-<main>
-<div class="hero">
-    <div>
-        <span class="eyebrow">Administration</span>
-        <h1>Admin dashboard</h1>
-        <p>Manage students and keep course content up to date.</p>
-    </div>
-</div>
-<div  class="card">
-   <h2>Students in 10th grade </h2>
-
-{% for student in students %}
-    <p>{{ student.id }} - {{ student.name }}</p>
-{% endfor %}
-
-{% include "partials/pagination.html" %}
-
-</div>
-
-<!--<form action="/admin/students" method="post" class ="card">-->
-<!--    <input type="text" name="student_name" placeholder="Student name" required>-->
-<!--    <button type="submit">Add Student</button>-->
-<!--</form>-->
-
-<form action="/api/v1/admin/students/delete" method="post" class = "card">
-    <input type="number" name="student_id" placeholder="Student ID" required>
-    <button type="submit">Delete Student</button>
-</form>
-
-<h2>Courses</h2>
-
-<div  class="card">
-     <a href="/api/v1/admin/courses">Courses</a>
-</div>
-
-</main>
-</body>
-</html>
+{% extends 'admin/base.html' %}
+{% set active_page = 'students' %}
+{% block title %}الطلاب{% endblock %}
+{% block content %}
+    <header class="admin-heading">
+        <div><h1>الطلاب</h1><p>عرض الطلاب وإدارة حساباتهم.</p></div>
+        <a class="button" href="/api/v1/admin/courses">كورساتي ←</a>
+    </header>
+    <section class="admin-panel" aria-labelledby="students-title">
+        <h2 id="students-title">قائمة الطلاب</h2>
+        <div class="admin-table-wrap">
+            <table class="admin-students">
+                <thead><tr><th scope="col">رقم الطالب</th><th scope="col">الاسم</th></tr></thead>
+                <tbody>
+                    {% for student in students %}
+                        <tr><td>{{ student.id }}</td><td><bdi>{{ student.name }}</bdi></td></tr>
+                    {% else %}
+                        <tr><td colspan="2">لا يوجد طلاب لعرضهم حالياً.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+    <section class="admin-panel" aria-labelledby="delete-title">
+        <h2 id="delete-title">حذف طالب</h2>
+        <form action="/api/v1/admin/students/delete" method="post" class="admin-add-form">
+            <label for="student-id">رقم الطالب</label>
+            <div class="admin-form-row">
+                <input id="student-id" type="number" name="student_id" min="1" placeholder="أدخل رقم الطالب" required>
+                <button class="admin-delete" type="submit">حذف الطالب</button>
+            </div>
+        </form>
+    </section>
+{% endblock %}

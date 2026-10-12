@@ -1,80 +1,57 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>جميع الدورات | درب</title>
     <link rel="stylesheet" href="/static/styles.css">
-
+    <link rel="stylesheet" href="/static/student-dashboard.css">
 </head>
-<body>
-    <nav class="topbar">
-        <a class="brand" href="/api/v1/student/allcourses">LearnSpace</a>
-        <div class="nav-links">
-            <a href="/api/v1/student/mycourses">My courses</a>
-            <a href="/api/v1/auth/signout">Sign out</a>
-        </div>
-    </nav>
+<body class="student-dashboard">
+    <header class="dashboard-header">
+        <a class="dashboard-brand" href="/api/v1/student/mycourses" aria-label="الرئيسية">
+            <span class="dashboard-brand-icon" aria-hidden="true">✦</span>
+            <span>درب</span>
+        </a>
+        <nav class="dashboard-nav" aria-label="التنقل الرئيسي">
+            <a href="/api/v1/student/mycourses">دوراتي</a>
+            <a href="/api/v1/auth/signout">تسجيل الخروج</a>
+        </nav>
+    </header>
+
     <main>
-    <div class="hero">
-        <div>
-            <span class="eyebrow">Student dashboard</span>
-            <h1>Keep learning</h1>
-            <p>Explore courses and build your next learning habit.</p>
+        <div class="dashboard-welcome">
+            <h1>جميع الدورات</h1>
+            <p>اختر دورة وابدأ التعلّم.</p>
         </div>
-    </div>
 
-    <div>
-<!--        <div class="search-bar">-->
-<!--&lt;!&ndash;            <span class="search-icon" aria-hidden="true">&#128269;</span>&ndash;&gt;-->
-<!--            <label for="course-search" class="muted">Find a course</label>-->
-<!--            <input id="course-search" type="search" placeholder="Search by course name..." autocomplete="off">-->
-<!--        </div>-->
-
-        <div class="courses">
-
+        <div class="dashboard-course-grid">
             {% for course in courses %}
-
-            <div class="card course-card" data-course-name="{{ course.name | lower }}">
-
-                <div class="course-icon" aria-hidden="true">{{ loop.index }}</div>
-                <span class="entity-label">Course</span>
-                <h3>{{ course.name }}</h3>
-                <p>Build your skills with guided units and practical lessons.</p>
-
-                <div class="course-action">
-                    <form action="/api/v1/student/buy-course/{{ course.id }}" method="post">
-                        <button type="submit">Join course</button>
-                    </form>
-                    <a class="button" href="/api/v1/student/courses/{{ course.id }}/units">View units</a>
+                <article class="dashboard-course-card">
+                    <div class="dashboard-course-info">
+                        {% if course.grade %}
+                            <span class="dashboard-course-grade">{{ course.grade.name }}</span>
+                        {% endif %}
+                        <h2>{{ course.name }}</h2>
+                        <div class="course-catalog-actions">
+                            <form class="inline-form" action="/api/v1/student/buy-course/{{ course.id }}" method="post">
+                                <button class="dashboard-button" type="submit">انضمام للدورة</button>
+                            </form>
+                            <a href="/api/v1/student/courses/{{ course.id }}/units">عرض الوحدات</a>
+                        </div>
+                    </div>
+                </article>
+            {% else %}
+                <div class="dashboard-empty">
+                    <h2>لا توجد دورات متاحة حالياً</h2>
+                    <p>تحقق لاحقاً لاستكشاف دورات جديدة.</p>
                 </div>
-
-            </div>
-
             {% endfor %}
-
-        </div>
-        <div id="no-results" class="card empty-state hidden">
-            <h2>No courses found</h2>
-            <p>Try a different search term.</p>
         </div>
 
-    </div>
+        <div dir="ltr" lang="en">
+            {% include 'partials/pagination.html' %}
+        </div>
     </main>
-    <script>
-        const search = document.getElementById("course-search");
-        const cards = [...document.querySelectorAll("[data-course-name]")];
-        const noResults = document.getElementById("no-results");
-        search.addEventListener("input", () => {
-            const query = search.value.trim().toLowerCase();
-            let visible = 0;
-            cards.forEach((card) => {
-                const matches = card.dataset.courseName.includes(query);
-                card.classList.toggle("hidden", !matches);
-                if (matches) visible += 1;
-            });
-            noResults.classList.toggle("hidden", visible !== 0);
-        });
-    </script>
 </body>
 </html>

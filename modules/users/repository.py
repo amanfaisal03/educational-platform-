@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 
+from modules.gread.models import Grade
 from modules.users.student.models import User
 
 
@@ -64,6 +65,9 @@ class UserRepository:
 
     def soft_delete(self, user: User) -> None:
         user.is_deleted = True
+
+    def grade_student(self, grade_id: int) -> User | None:
+        return self.db.query(Grade).filter(Grade.id == grade_id).first()
 
 
 

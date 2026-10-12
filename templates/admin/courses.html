@@ -1,73 +1,45 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta charset="UTF-8">
-    <title>Course Dashboard</title>
-    <link rel="stylesheet" href="/static/styles.css?v=20261006-pagination-2">
-</head>
-<body>
-<nav class="topbar">
-    <a class="brand" href="/api/v1/admin">LearnSpace Admin</a>
-    <div class="nav-links">
-        <a href="/api/v1/admin">Dashboard</a>
-        <a href="/api/v1/auth/signout">Sign out</a>
+{% extends 'admin/base.html' %}
+{% set active_page = 'courses' %}
+{% block title %}كورساتي{% endblock %}
+{% block content %}
+    <header class="admin-heading">
+        <div><h1>كورساتي</h1><p>اختر كورس لإدارة الوحدات والدروس.</p></div>
+        <a class="button" href="#new-course">+ كورس جديد</a>
+    </header>
+
+    <div class="admin-course-grid">
+        {% for course in courses %}
+            <article class="admin-course">
+                <div class="admin-course-cover" aria-hidden="true">
+                    <svg viewBox="0 0 40 40" width="42" height="42" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 33V9a3 3 0 0 1 3-3h22v27H12a3 3 0 0 0 0 6h22M9 33v3M16 13h11M16 20h8" /></svg>
+                </div>
+                <div class="admin-course-body">
+                    {% if course.grade and course.grade.name|lower != 'unassigned' %}
+                        <span class="admin-grade">{{ course.grade.name }}</span>
+                    {% endif %}
+                    <h2 dir="auto">{{ course.name }}</h2>
+                    <div class="admin-course-footer">
+                        <a href="/api/v1/admin/courses/{{ course.id }}/units">إدارة الوحدات ←</a>
+                        <form action="/api/v1/admin/courses/{{ course.id }}" method="post" class="inline-form">
+                            <button class="admin-delete" type="submit" aria-label="حذف {{ course.name }}">حذف</button>
+                        </form>
+                    </div>
+                </div>
+            </article>
+        {% else %}
+            <div class="admin-empty"><h2>لا توجد كورسات بعد</h2><p>أضف أول كورس لتبدأ إعداد المحتوى.</p></div>
+        {% endfor %}
     </div>
-</nav>
-<main>
-<span class="eyebrow">Content management</span>
-<h1>Course dashboard</h1>
+    <div dir="ltr" lang="en">{% include 'partials/pagination.html' %}</div>
 
-<form action="/api/v1/admin/add_courses" method="post" class="card add-course-form">
-    <div class="form-heading">
-        <span class="entity-label">New course</span>
-        <h2>Add a course</h2>
-        <p>Create a new course for students to explore.</p>
-    </div>
-    <div class="add-course-fields">
-        <label>
-            Course name
-            <input type="text" name="title" placeholder="e.g. Mathematics" required>
-        </label>
-        <button type="submit">+ Add course</button>
-    </div>
-</form>
-
-
-<div class="section-heading">
-    <div><h2>Course library</h2><p>Open a course to manage its units.</p></div>
-</div>
-
-{% for course in courses %}
-<div class="card admin-course-card">
-
-    <span class="entity-label">Course</span>
-    <h3>{{ course.name }}</h3>
-
-    <div class="course-tools">
-        <a class="secondary-button" href="/api/v1/admin/courses/{{ course.id }}/units">
-            Manage units <span aria-hidden="true">-&gt;</span>
-        </a>
-        <form class="delete-course-form" action="/api/v1/admin/courses/{{ course.id }}" method="post">
-            <button class="icon-button" type="submit" aria-label="Delete {{ course.name }}" title="Delete course">x</button>
+    <section id="new-course" class="admin-panel" aria-labelledby="new-course-title">
+        <h2 id="new-course-title">إضافة كورس جديد</h2>
+        <form action="/api/v1/admin/add_courses" method="post" class="admin-add-form">
+            <label for="course-title">اسم الكورس</label>
+            <div class="admin-form-row">
+                <input id="course-title" type="text" name="title" placeholder="مثال: الرياضيات - الفصل الأول" required>
+                <button type="submit">إضافة الكورس</button>
+            </div>
         </form>
-    </div>
-
-</div>
-{% endfor %}
-
-{% include "partials/pagination.html" %}
-
-
-<div>
-
-</div>
-
-
-<div class="card" >
-<a href="/api/v1/admin">Back to Admin</a>
-  </div>
-    
-</main>
-</body>
-</html>
+    </section>
+{% endblock %}
