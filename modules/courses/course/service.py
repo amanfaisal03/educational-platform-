@@ -28,13 +28,13 @@ class CourseService:
             raise CourseNotFoundError(course_id)
         return course
 
-    def create_course(self, name: str) -> Course:
+    def create_course(self,grade_id:int, name: str ) -> Course:
         normalized_name = name.strip()
         if not normalized_name:
             raise EmptyTitleError()
         if self.courses.get_course_by_name(normalized_name) is not None:
             raise CourseAlreadyExistsError(normalized_name)
-        return self.courses.add_course(normalized_name)
+        return self.courses.add_course(normalized_name,grade_id)
 
     def deactivate_course(self, course_id: int) -> None:
         course = self.get_course(course_id)

@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from modules.gread.models import Grade
+from modules.grade.models import Grade
 from modules.users.student.models import User
 
 

@@ -58,10 +58,16 @@ class MaterialService(MaterialServiceContract):
         if material_type not in self.ALLOWED_TYPES:
             raise InvalidMaterialTypeError(material_type)
 
+        lesson = self.repository.get_lesson(lesson_id)
+        if (
+            lesson is None
+            or not lesson.is_active
+            or not lesson.unit.is_active
+            or not lesson.unit.course.is_active
+        ):
+            raise LessonNotFoundError(lesson_id)
+
         if student_id is not None:
-            lesson = self.repository.get_lesson(lesson_id)
-            if lesson is None:
-                raise LessonNotFoundError(lesson_id)
             if self.enrollments.get_enrollment(
                 student_id,
                 lesson.unit.course.id,

@@ -28,7 +28,6 @@ services:
     environment:
       database_url: postgresql+psycopg2://platform_user:platform_password@postgres:5432/platformdb
       SECURE_COOKIES: "false"
-      debug_toolbar_enabled: "false"
     volumes:
       - ./templates:/app/templates:ro
       - ./static:/app/static:ro

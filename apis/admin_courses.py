@@ -6,8 +6,9 @@ from modules.auth.authorization import require_admin
 from modules.auth.services import (
     get_course_service,
     get_lesson_service,
-    get_unit_service,
+    get_unit_service, get_grade_service,
 )
+from modules.courses import course
 from modules.courses.course.service import  CourseService
 from modules.courses.lesson.service import LessonService
 from modules.courses.unit.service import UnitService
@@ -18,7 +19,7 @@ from modules.exceptions import (
     LessonAlreadyExistsError,
     UnitNotFoundError,
 )
-
+from modules.grade.grade_service import GradeService
 
 admin_courses_router= APIRouter(
     prefix="/api/v1/admin",
@@ -33,6 +34,7 @@ def display_courses(
     request: Request,
     page: int = Query(1, ge=1),
     service: CourseService = Depends(get_course_service),
+    grade_service: GradeService = Depends(get_grade_service),
 ):
     per_page = 6
     courses, page, total_pages = service.list_courses_paginated(page, per_page)
@@ -42,25 +44,40 @@ def display_courses(
         name="admin/courses.html",
         context={
             "courses": courses,
+            "grades": grade_service.list_grades(),
             "page": page,
             "total_pages": total_pages,
         },
     )
 
-
 @admin_courses_router.post("/add_courses")
 def create_course(
     title: str = Form(...),
+    grade_id: int = Form(...),
     service: CourseService = Depends(get_course_service),
+    grade_service: GradeService = Depends(get_grade_service),
 ):
+    grade = grade_service.get_grade_by_id(grade_id)
+
+    if grade is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Grade not found"
+        )
+
     try:
-        service.create_course(title)
+        service.create_course(grade.id, title)
+
     except EmptyTitleError:
         raise HTTPException(status_code=400, detail="Course title is required")
+
     except CourseAlreadyExistsError:
         raise HTTPException(status_code=409, detail="Course already exists")
-    return RedirectResponse("/api/v1/admin/courses", status_code=status.HTTP_303_SEE_OTHER)
 
+    return RedirectResponse(
+        "/api/v1/admin/courses",
+        status_code=status.HTTP_303_SEE_OTHER
+    )
 
 @admin_courses_router.post("/courses/{course_id}")
 @admin_courses_router.delete("/courses/{course_id}")

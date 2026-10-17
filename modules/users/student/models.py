@@ -13,7 +13,6 @@ class User(Base):
     password = Column(String(255), nullable=False)
     role = Column(Enum("admin", "student", name="role_enum"), nullable=False)
     is_deleted = Column(Boolean, nullable=False, default=False)
-    progress_storage = Column(String(255), nullable=False)
 
     courses = relationship(
         "UserCourse",

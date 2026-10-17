@@ -5,7 +5,7 @@ from sqlalchemy import pool
 
 from alembic import context
 from modules.base import Base
-from modules.gread.models import Grade
+from modules.grade.models import Grade
 from modules.Config import settings
 from modules.courses.course.models import Course
 from modules.courses.lesson.models import Lesson

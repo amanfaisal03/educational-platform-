@@ -21,6 +21,7 @@ class MaterialRepository:
             .filter(
                 Material.lesson_id == lesson_id,
                 Material.type == material_type,
+                Material.is_active.is_(True),
             )
             .first()
         )

@@ -35,10 +35,20 @@
     <section id="new-course" class="admin-panel" aria-labelledby="new-course-title">
         <h2 id="new-course-title">إضافة كورس جديد</h2>
         <form action="/api/v1/admin/add_courses" method="post" class="admin-add-form">
+            <label for="course-grade">الصف</label>
+            <select id="course-grade" name="grade_id" required>
+                <option value="" selected disabled>اختر الصف</option>
+                {% for grade in grades %}
+                    <option value="{{ grade.id }}">{{ grade.name }}</option>
+                {% endfor %}
+            </select>
+            {% if not grades %}
+                <p>أضف صفاً أولاً قبل إنشاء كورس.</p>
+            {% endif %}
             <label for="course-title">اسم الكورس</label>
             <div class="admin-form-row">
                 <input id="course-title" type="text" name="title" placeholder="مثال: الرياضيات - الفصل الأول" required>
-                <button type="submit">إضافة الكورس</button>
+                <button type="submit" {% if not grades %}disabled{% endif %}>إضافة الكورس</button>
             </div>
         </form>
     </section>

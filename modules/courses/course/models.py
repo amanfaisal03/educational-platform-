@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
 
 from modules.base import Base
-from modules.gread.models import Grade
+from modules.grade.models import Grade
 
 
 class Course(Base):

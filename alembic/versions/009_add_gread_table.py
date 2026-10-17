@@ -1,4 +1,4 @@
-"""add gread table 
+"""add grade table
 
 Revision ID: 009
 Revises: 008

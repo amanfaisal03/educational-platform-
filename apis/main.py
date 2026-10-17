@@ -12,6 +12,7 @@ from apis.admin_courses import admin_courses_router
 from apis.admin_materials import admin_materials_router
 from apis.courses import materials_router
 from apis.user_course import student_courses_router
+from apis.grades import admin_courses_router as grades_router
 
 courses_router = APIRouter()
 courses_router.include_router(admin_courses_router)
@@ -33,25 +34,21 @@ def configure_debug_toolbar(app: FastAPI) -> None:
 
     app.add_middleware(
         DebugToolbarMiddleware,
-        ALLOWED_HOSTS=None,
         PANELS=[
-            "debug_toolbar.panels.versions.VersionsPanel",
-            "debug_toolbar.panels.timer.TimerPanel",
-            "debug_toolbar.panels.settings.SettingsPanel",
-            "debug_toolbar.panels.request.RequestPanel",
-            "debug_toolbar.panels.headers.HeadersPanel",
-            "debug_toolbar.panels.routes.RoutesPanel",
-            "debug_toolbar.panels.logging.LoggingPanel",
+            "debug_toolbar.panels.sqlalchemy.SQLAlchemyPanel",
+        ],
+        DISABLE_PANELS=[
+            "debug_toolbar.panels.profiling.ProfilingPanel",
             "debug_toolbar.panels.redirects.RedirectsPanel",
         ],
     )
-
 
 configure_debug_toolbar(app)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.include_router(auth_router)
 app.include_router(courses_router)
 app.include_router(admin_router)
+app.include_router(grades_router)
 
 
 @app.get("/api/v1/debug-toolbar/status", tags=["API v1 - Debug"])

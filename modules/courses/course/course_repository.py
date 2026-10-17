@@ -26,8 +26,8 @@ class CourseRepository:
     def get_course_by_name(self, name: str) -> Course | None:
         return self.db.query(Course).filter(Course.name == name).first()
 
-    def add_course(self, name: str) -> Course:
-        course = Course(name=name)
+    def add_course(self, name: str , grade_id) -> Course:
+        course = Course(name=name, grade_id=grade_id)
         self.db.add(course)
         self.db.flush()
         self.db.refresh(course)

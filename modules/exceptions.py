@@ -60,3 +60,8 @@ class UnitNotFoundError(AppError):
 
 class UserAlreadyExistsError(AppError):
     pass
+
+class GradeNotFoundError(AppError):
+    pass
+class GradeAlreadyExistsError(AppError):
+    pass

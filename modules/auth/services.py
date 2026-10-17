@@ -1,4 +1,6 @@
 from fastapi import Depends
+from modules.grade.grade_repo import GradeRepository
+from modules.grade.grade_service import GradeService
 from sqlalchemy.orm import Session
 
 from modules.database import get_db_session
@@ -78,3 +80,9 @@ def get_enrollment_service(
         courses=CourseRepository(db),
         enrollments=UserCourseRepository(db),
     )
+
+def get_grade_service(
+    db: Session = Depends(get_db_session),
+):
+    courses = CourseRepository(db)
+    return GradeService(courses, GradeRepository(db, courses))
