@@ -34,8 +34,10 @@ def configure_debug_toolbar(app: FastAPI) -> None:
 
     app.add_middleware(
         DebugToolbarMiddleware,
+        ALLOWED_HOSTS=settings.debug_toolbar_allowed_hosts,
+        SHOW_TOOLBAR_CALLBACK="modules.debug_toolbar.show_toolbar",
         PANELS=[
-            "debug_toolbar.panels.sqlalchemy.SQLAlchemyPanel",
+            "modules.debug_toolbar.ApplicationSQLAlchemyPanel",
         ],
         DISABLE_PANELS=[
             "debug_toolbar.panels.profiling.ProfilingPanel",
