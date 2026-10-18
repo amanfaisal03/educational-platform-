@@ -7,4 +7,8 @@ def hash_password(password: str) -> str:
     return _password_context.hash(password)
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return _password_context.verify(plain_password, hashed_password)
+    try:
+        return _password_context.verify(plain_password, hashed_password)
+    except ValueError:
+        # Invalid or unsupported stored hashes must not crash sign-in.
+        return False

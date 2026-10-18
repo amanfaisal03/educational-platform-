@@ -48,12 +48,14 @@ class UserRepository:
         email: str,
         password: str,
         role: str,
+        grade_id: int | None = None,
     ) -> User:
         user = User(
             name=name,
             email=email,
             password=password,
             role=role,
+            grade_id=grade_id,
         )
         self.db.add(user)
         self.db.flush()
@@ -66,7 +68,7 @@ class UserRepository:
     def soft_delete(self, user: User) -> None:
         user.is_deleted = True
 
-    def grade_student(self, grade_id: int) -> User | None:
+    def grade_student(self, grade_id: int) -> Grade | None:
         return self.db.query(Grade).filter(Grade.id == grade_id).first()
 
 

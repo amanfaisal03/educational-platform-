@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>إنشاء حساب | درب</title>
     <link rel="stylesheet" href="/static/login.css">
-    <link rel="stylesheet" href="/static/register.css">
+    <link rel="stylesheet" href="/static/register.css?v=grade-select-2">
 </head>
 <body class="registration-page">
 <main class="login-layout">
@@ -27,10 +27,22 @@
                     <input id="email" name="email" type="email" placeholder="name@email.com" autocomplete="email" dir="ltr" required>
                 </div>
                 <div class="field">
+                    <label for="grade_id">الصف الدراسي</label>
+                    <select id="grade_id" name="grade_id" required>
+                        <option value="" disabled selected>اختر صفك الدراسي</option>
+                        {% for grade in grades %}
+                        <option value="{{ grade.id }}">{{ grade.name }}</option>
+                        {% endfor %}
+                    </select>
+                    {% if not grades %}
+                    <p class="recovery-help" role="status">لا توجد صفوف متاحة حالياً. تواصل مع إدارة المنصة.</p>
+                    {% endif %}
+                </div>
+                <div class="field">
                     <label for="password">كلمة المرور</label>
                     <input id="password" name="password" type="password" placeholder="٨ أحرف على الأقل" autocomplete="new-password" dir="ltr" minlength="8" required>
                 </div>
-                <button class="submit-button" id="register-submit" type="submit">إنشاء الحساب</button>
+                <button class="submit-button" id="register-submit" type="submit" {% if not grades %}disabled{% endif %}>إنشاء الحساب</button>
             </form>
             <div class="account-links"><p>عندك حساب؟ <a href="/api/v1/auth/sign_in">سجّل دخولك</a></p></div>
         </div>

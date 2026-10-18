@@ -1,11 +1,12 @@
 from fastapi import APIRouter, Depends, Form, Request, status, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
-from modules.auth.services import get_auth_service, get_token_service
+from modules.auth.services import get_auth_service, get_token_service, get_grade_service
+from modules.grade.grade_service import GradeService
 from modules.Config import settings
 from modules.auth.schemas import LoginRequest, StudentRegistrationRequest
 from modules.auth.service  import AuthService
-from modules.exceptions import InvalidCredentialsError, UserAlreadyExistsError
+from modules.exceptions import InvalidCredentialsError, UserAlreadyExistsError, GradeNotFoundError
 from modules.auth.token_service import TokenService
 
 auth_router = APIRouter(
@@ -21,8 +22,10 @@ def login_page(request: Request):
 
 
 @auth_router.get("/sign_up", response_class=HTMLResponse)
-def registration_page(request: Request):
-    return templates.TemplateResponse(request=request, name="register.html", context={})
+def registration_page(request: Request, grades: GradeService = Depends(get_grade_service)):
+    return templates.TemplateResponse(
+        request=request, name="register.html", context={"grades": grades.list_grades()}
+    )
 
 
 @auth_router.post("/register")
@@ -30,15 +33,19 @@ def register(
     name: str = Form(...),
     email: str = Form(...),
     password: str = Form(...),
+    grade_id: int = Form(..., gt=0),
     service:AuthService = Depends(get_auth_service),
 ):
     request=StudentRegistrationRequest(
         name=name,
         email=email,
         password=password,
+        grade_id=grade_id,
     )
     try:
         service.register_student(request)
+    except GradeNotFoundError:
+        raise HTTPException(status_code=400, detail="Please select a valid grade")
     except UserAlreadyExistsError:
         raise HTTPException(
             status_code=409,

@@ -8,7 +8,7 @@ class Material(Base):
     __tablename__ = "materials"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    type = Column(Enum("pdf", "video", name="material_type_enum"), nullable=False)
+    type = Column(Enum("pdf", "video", "image", name="material_type_enum"), nullable=False)
     file_data = Column(LargeBinary, nullable=True)
     lesson_id = Column(
         Integer,

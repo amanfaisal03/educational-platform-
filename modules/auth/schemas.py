@@ -6,6 +6,7 @@ class StudentRegistrationRequest(BaseModel):
     name: str
     email: str
     password: str
+    grade_id: int
 
 
 class LoginRequest(BaseModel):
@@ -22,7 +23,6 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     user_id: int
-
 
 
 

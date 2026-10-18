@@ -16,6 +16,7 @@ from modules.exceptions import (
     InvalidTokenError,
     MissingTokenSubjectError,
     UserAlreadyExistsError,
+    GradeNotFoundError,
 )
 from modules.users.student.models import User
 
@@ -31,12 +32,15 @@ class AuthService:
         email = request.email.lower().strip()
         if self.users.get_user_by_email(email):
             raise UserAlreadyExistsError()
+        if self.users.grade_student(request.grade_id) is None:
+            raise GradeNotFoundError()
 
         return self.users.add(
             name=request.name.strip(),
             email=email,
             password=hash_password(request.password),
             role="student",
+            grade_id=request.grade_id,
         )
 
     def authenticate(self, request: LoginRequest) -> User:
