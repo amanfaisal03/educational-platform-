@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from debug_toolbar.middleware import DebugToolbarMiddleware
+from debug_toolbar.settings import DebugToolbarSettings
 
 from apis.materials import admin_router
 from apis.auth import auth_router
@@ -36,12 +37,15 @@ def configure_debug_toolbar(app: FastAPI) -> None:
         DebugToolbarMiddleware,
         ALLOWED_HOSTS=settings.debug_toolbar_allowed_hosts,
         SHOW_TOOLBAR_CALLBACK="modules.debug_toolbar.show_toolbar",
+        DEFAULT_PANELS=[
+            panel for panel in DebugToolbarSettings().DEFAULT_PANELS
+            if panel != "debug_toolbar.panels.redirects.RedirectsPanel"
+        ],
         PANELS=[
             "modules.debug_toolbar.ApplicationSQLAlchemyPanel",
         ],
         DISABLE_PANELS=[
             "debug_toolbar.panels.profiling.ProfilingPanel",
-            "debug_toolbar.panels.redirects.RedirectsPanel",
         ],
     )
 

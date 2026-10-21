@@ -75,7 +75,7 @@ def display_course_units(
     service: CourseService = Depends(get_course_service),
 ):
     try:
-        course = service.get_course(course_id)
+        course = service.get_course_for_player(course_id)
         units = course.units
     except CourseNotFoundError:
         raise HTTPException(status_code=404, detail="Course not found")

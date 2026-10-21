@@ -28,6 +28,12 @@ class CourseService:
             raise CourseNotFoundError(course_id)
         return course
 
+    def get_course_for_player(self, course_id: int) -> Course:
+        course = self.courses.get_course_for_player(course_id)
+        if course is None:
+            raise CourseNotFoundError(course_id)
+        return course
+
     def create_course(self,grade_id:int, name: str ) -> Course:
         normalized_name = name.strip()
         if not normalized_name:

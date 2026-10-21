@@ -1,6 +1,9 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload
 
 from modules.courses.course.models import Course
+from modules.courses.unit.models import Unit
+from modules.courses.lesson.models import Lesson
+from modules.courses.material.models import Material
 
 
 class CourseRepository:
@@ -22,6 +25,20 @@ class CourseRepository:
 
     def get_course_by_id(self, course_id: int) -> Course | None:
         return self.db.query(Course).filter(Course.id == course_id ,Course.is_active.is_(True)).first()
+
+    def get_course_for_player(self, course_id: int) -> Course | None:
+        return (
+            self.db.query(Course)
+            .filter(Course.id == course_id, Course.is_active.is_(True))
+            .options(
+                selectinload(Course.units.and_(Unit.is_active.is_(True)))
+                .selectinload(Unit.lessons.and_(Lesson.is_active.is_(True)))
+                .selectinload(Lesson.materials.and_(Material.is_active.is_(True)))
+                .load_only(Material.id, Material.lesson_id, Material.type,
+                           Material.is_active, raiseload=True)
+            )
+            .first()
+        )
 
     def get_course_by_name(self, name: str) -> Course | None:
         return self.db.query(Course).filter(Course.name == name).first()
